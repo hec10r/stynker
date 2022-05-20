@@ -1,7 +1,7 @@
 from collections import defaultdict
 from nodes import Node
 from edge import Edge
-from typing import List, Iterable
+from typing import Iterable
 
 
 class Stynker:
