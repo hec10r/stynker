@@ -54,7 +54,7 @@ class Stynker:
                 # Check if trickles arrive to nodes
                 edge.dream_cycle()
             # Check the inputs for T values
-            if node.type == "input" and node.active: 
+            if node.is_input() and node.active: 
                 node.increase_level(10)
                 node.active = False
         

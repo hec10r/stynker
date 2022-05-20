@@ -33,6 +33,9 @@ class Node:
         # - Update endo
         pass
 
+    def is_input(self) -> bool:
+        return self.type == "input"
+        
     def is_output(self) -> bool:
         return self.type == "output"
 
