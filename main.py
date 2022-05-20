@@ -46,4 +46,4 @@ if __name__ == "__main__":
 
     # Save results as json file
     with open("results.json", "w") as f:
-        f.write(json.dumps(results, indent=4))
+        f.write(json.dumps(results, indent=2))
