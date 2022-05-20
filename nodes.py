@@ -8,6 +8,9 @@ class Node:
         self.endo: int
         self.status: str
 
+        self.type: str
+        self.active: bool
+
     def is_full(self) -> bool:
         return self.level >= self.size
 
@@ -16,7 +19,10 @@ class Node:
         self.damage += 1
 
     def dream_cycle(self):
-        self.level += self.endo
+        self.increase_level(self.endo)
+    
+    def increase_level(self, q: int) -> None:
+        self.level += q
 
     def dream_check(self) -> bool:
         return self.level >= self.size
@@ -26,6 +32,9 @@ class Node:
         # - Update size
         # - Update endo
         pass
+
+    def is_output(self) -> bool:
+        return self.type == "output"
 
     def is_empty(self) -> bool:
         # TODO:

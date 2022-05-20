@@ -50,18 +50,28 @@ class Stynker:
         for node in self.get_nodes():
             # Increase the level of each node
             node.dream_cycle()
-            for edge in self._graph[node]:
+            for edge in self.get_empty_nodes[node]:
                 # Check if trickles arrive to nodes
                 edge.dream_cycle()
+            # Check the inputs for T values
+            if node.type == "input" and node.active: 
+                node.increase_level(10)
+                node.active = False
         
         for node in self.get_nodes():
             # Check if the node is full
             if node.is_full():
+                # Mark output node as active if it spills
+                if node.is_output():
+                    node.activate = True
                 # Spill full nodes
                 node.spill()
                 for edge in self.get_nodes()[node]:
                     # Edges get loaded with trickles
                     edge.load()
+            elif node.is_output():
+                node.active = False
+                
 
     def _run_sleep_cycle(self, n_remakes: int = 1) -> None:
         # Sort list of nodes by damage
