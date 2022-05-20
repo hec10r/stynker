@@ -5,13 +5,14 @@ from typing import Iterable
 
 
 class Stynker:
-    def __init__(self):
-        self._graph: defaultdict = defaultdict(set)
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+        self.graph: defaultdict = defaultdict(set)
         self.current_cycle: int = 0
         self.period: str
 
     def get_nodes(self) -> Iterable[Node]:
-        return self._graph.keys()
+        return self.graph.keys()
 
     def get_empty_nodes(self) -> Iterable[Node]:
         empty_nodes = (
@@ -23,7 +24,7 @@ class Stynker:
 
     def add_edge(self, node_1: Node, node_2: Node, **kwargs):
         edge = Edge(node_2, **kwargs)
-        self._graph[node_1].add(edge)
+        self.graph[node_1].add(edge)
 
     def remake(self, nodes: Iterable[Node]) -> None:
         for node in nodes:
@@ -39,6 +40,7 @@ class Stynker:
         pass
     
     def run_cycle(self) -> None:
+        self.current_cycle += 1
         if self.period == "dream":
             self._run_dream_cycle()
         elif self.period == "sleep":
@@ -50,7 +52,7 @@ class Stynker:
         for node in self.get_nodes():
             # Increase the level of each node
             node.dream_cycle()
-            for edge in self.get_empty_nodes[node]:
+            for edge in self.graph[node]:
                 # Check if trickles arrive to nodes
                 edge.dream_cycle()
             # Check the inputs for T values
@@ -66,7 +68,7 @@ class Stynker:
                     node.activate = True
                 # Spill full nodes
                 node.spill()
-                for edge in self.get_nodes()[node]:
+                for edge in self.graph[node]:
                     # Edges get loaded with trickles
                     edge.load()
             elif node.is_output():
@@ -76,16 +78,41 @@ class Stynker:
     def _run_sleep_cycle(self, n_remakes: int = 1) -> None:
         # Sort list of nodes by damage
         damage_order = lambda node: node.damage
-        order_nodes = sorted(
+        ordered_nodes = sorted(
             [node for node in self.get_nodes()],
             key=damage_order
         )
         
         # Pick first n nodes with less damage and remake
-        self.remake(order_nodes[:n_remakes])
+        self.remake(ordered_nodes[:n_remakes])
 
     def _run_wake_cycle(self) -> None:
         # TODO: basically remake empty nodes
         for node in self.get_empty_nodes():
             # This remake may be different 
             node.remake()
+
+    def __repr__(self) -> str:
+        import json
+        status = {
+            "cycle": self.current_cycle,
+            "period": self.period,
+        }
+        nodes_info = [
+            [
+                json.loads(str(node)),
+                [
+                    json.loads(str(edge))
+                    for edge in edges
+                ],
+            ]
+            for node, edges in self.graph.items()
+        ]
+
+        repr_ = (
+            json.dumps(status, indent=4)
+            + "\n" +
+            json.dumps(nodes_info, indent=4)
+        )
+
+        return repr_

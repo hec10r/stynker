@@ -1,15 +1,21 @@
+from typing import Union
+
+
 class Node:
-    def __init__(self):
+    def __init__(self, **kwargs):
         # TODO: decide how to define this
+        self.__dict__.update(**kwargs)
         self.name: str
-        self.level: int
-        self.damage: int
         self.size: int
         self.endo: int
-        self.status: str
-
-        self.type: str
+        self.type: Union[str, None]
         self.active: bool
+
+        self.type = None
+        self.active = None
+        self.level: int = 0
+        self.damage: int = 0
+        
 
     def is_full(self) -> bool:
         return self.level >= self.size
@@ -23,9 +29,6 @@ class Node:
     
     def increase_level(self, q: int) -> None:
         self.level += q
-
-    def dream_check(self) -> bool:
-        return self.level >= self.size
 
     def remake(self) -> None:
         # TODO:
@@ -46,3 +49,16 @@ class Node:
 
     def __hash__(self) -> int:
         return hash(self.name)
+
+    def __repr__(self) -> str:
+        repr_ = {
+            "name": self.name,
+            "size": self.size,
+            "endo": self.endo,
+            "type": self.type,
+            "active": self.active,
+            "level": self.level,
+            "damage": self.damage,
+        }
+        import json
+        return json.dumps(repr_, indent=2)

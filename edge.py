@@ -5,8 +5,8 @@ class Edge:
     def __init__(
         self,
         node: Node,
-        weight: int,
-        length: int,
+        weight: int = None,
+        length: int = None,
         **kwargs
     ) -> None:
 
@@ -16,15 +16,28 @@ class Edge:
         self.original_kwargs = kwargs.copy()
         self.__dict__.update(kwargs)
 
-        self.next_steps: list
+        self.next_steps: list = list()
 
     def __hash__(self) -> int:
         return hash(self.node.name)
 
-    def dream_cycle(self):
-        cnt = sum([1 for el in self.next_steps if el == 0])
+    def dream_cycle(self) -> None:
+        cnt = sum([1 for el in self.next_steps if el == 1])
         self.node.level += cnt * self.weight
-        self.next_steps = [el - 1 for el in self.next_steps if el != 0]
+        self.next_steps = [el - 1 for el in self.next_steps if el != 1]
 
-    def load(self):
+    def load(self) -> None:
         self.next_steps.append(self.lenght)
+
+    def __hash__(self) -> int:
+        return hash(self.node.name)
+
+    def __repr__(self) -> str:
+        repr_ = {
+            "to_node": self.node.name,
+            "weight": self.weight,
+            "lenght": self.lenght,
+            "next_steps": self.next_steps,
+        }
+        import json
+        return json.dumps(repr_, indent=2)
