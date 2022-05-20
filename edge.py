@@ -26,5 +26,5 @@ class Edge:
         self.node.level += cnt * self.weight
         self.next_steps = [el - 1 for el in self.next_steps if el != 0]
 
-    def spill(self):
+    def load(self):
         self.next_steps.append(self.lenght)

@@ -12,8 +12,8 @@ class Node:
         return self.level >= self.size
 
     def spill(self) -> None:
-        self.damage += 1
         self.level = 0
+        self.damage += 1
 
     def dream_cycle(self):
         self.level += self.endo
@@ -25,6 +25,11 @@ class Node:
         # TODO:
         # - Update size
         # - Update endo
+        pass
+
+    def is_empty(self) -> bool:
+        # TODO:
+        # Logic to define if a node is empty
         pass
 
     def __hash__(self) -> int:
