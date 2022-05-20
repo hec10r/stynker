@@ -94,7 +94,7 @@ class Stynker:
 
     def __repr__(self) -> str:
         import json
-        status = {
+        repr_ = {
             "cycle": self.current_cycle,
             "period": self.period,
         }
@@ -108,11 +108,5 @@ class Stynker:
             ]
             for node, edges in self.graph.items()
         ]
-
-        repr_ = (
-            json.dumps(status, indent=4)
-            + "\n" +
-            json.dumps(nodes_info, indent=4)
-        )
-
-        return repr_
+        repr_["nodes_info"] = nodes_info
+        return json.dumps(repr_, indent=4)
