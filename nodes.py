@@ -53,6 +53,9 @@ class Node:
     def __hash__(self) -> int:
         return hash(self.name)
 
+    def __eq__(self, other_node) -> bool:
+        return self.name == other_node.name
+
     def __repr__(self) -> str:
         repr_ = {
             "name": self.name,
