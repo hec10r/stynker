@@ -1,4 +1,6 @@
-from typing import Union
+import json
+from typing import Tuple, Union
+from random import randint
 
 
 class Node:
@@ -10,6 +12,9 @@ class Node:
         self.endo: int
         self.type: Union[str, None]
         self.active: bool
+
+        self.size_range: Tuple[int] = (10, 20)
+        self.endo_range: Tuple[int] = (1, 3)
 
         self.type = None
         self.active = None
@@ -31,10 +36,8 @@ class Node:
         self.level += q
 
     def remake(self) -> None:
-        # TODO:
-        # - Update size
-        # - Update endo
-        pass
+        self.size = randint(*self.size_range)
+        self.endo = randint(*self.endo_range)
 
     def is_input(self) -> bool:
         return self.type == "input"
@@ -60,5 +63,4 @@ class Node:
             "level": self.level,
             "damage": self.damage,
         }
-        import json
         return json.dumps(repr_, indent=2)
