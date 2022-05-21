@@ -4,6 +4,7 @@ from typing import Dict, Iterable, Tuple, Union
 from stynker import Stynker
 from nodes import Node
 
+
 def get_edges() -> Iterable[Tuple[Union[Node, Dict[str, int]]]]:
     # Create nodes as specified in the slides
     node_2: Node = Node(size=13, endo=1, name=2)
@@ -21,12 +22,6 @@ def get_edges() -> Iterable[Tuple[Union[Node, Dict[str, int]]]]:
         (node_8, node_5, {"weight": 3, "length": 1}),
     ]
     return edge_info
-
-def parse_edge_info(
-        edge_info: Tuple[Union[Node, Dict[str, int]]]
-) -> None: #Iterable[Node, Node, Dict[str, str]]:
-    return edge_info
-
     
 
 if __name__ == "__main__":
@@ -34,7 +29,7 @@ if __name__ == "__main__":
     # Initialize graph
     stynker = Stynker(period="dream")
     for edge_info in edges:
-        node_1, node_2, kwargs = parse_edge_info(edge_info)
+        node_1, node_2, kwargs = edge_info
         # Add edges to the graph
         stynker.add_edge(node_1, node_2, **kwargs)
 
