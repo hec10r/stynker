@@ -1,5 +1,4 @@
 import json
-from turtle import st
 from typing import Dict, Iterable, Tuple, Union
 from stynker import Stynker
 from nodes import Node
@@ -38,6 +37,11 @@ if __name__ == "__main__":
     for _ in range(15):
         stynker.run_cycle()
         results.append(json.loads(str(stynker)))
+
+    # Run one sleep cycle
+    stynker.period = "sleep"
+    stynker.run_cycle()
+    results.append(json.loads(str(stynker)))
 
     # Save results as json file
     with open("results.json", "w") as f:
