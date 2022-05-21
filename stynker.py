@@ -16,7 +16,7 @@ class Stynker:
         self.empty_nodes: List[Node] = list()
 
         self.edge_range: Tuple[int] = (1, 3)
-        self.weight_range: Tuple[int] = (10, 20)
+        self.weight_range: Tuple[int] = (1, 3)
         self.length_range: Tuple[int] = (1, 3)
 
     def add_empty_node(self, node: Node) -> None:
