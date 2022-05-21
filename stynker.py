@@ -9,8 +9,8 @@ from typing import Iterable, List, Tuple
 class Stynker:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
-        self.graph: defaultdict = defaultdict(set)
-        self.reverse_graph: defaultdict = defaultdict(set)
+        self.graph: defaultdict = defaultdict(set) # Node -> {set of Edges}
+        self.reverse_graph: defaultdict = defaultdict(set) # Node -> {set of Nodes}
         self.current_cycle: int = 0
         self.period: str
         self.empty_nodes: List[Node] = list()
@@ -36,11 +36,13 @@ class Stynker:
 
     def add_edge(self, node_1: Node, node_2: Node, **kwargs):
         edge = Edge(node_2, **kwargs)
+        reverse_edge = Edge(node_1, **kwargs)
         self.graph[node_1].add(edge)
-        self.reverse_graph[node_2.name].add(node_1.name)
+        self.reverse_graph[node_2].add(node_1)
 
     def remake(self, nodes: Iterable[Node]) -> None:
         for node in nodes:
+            print(f"Remaking node: {node}")
             # Remake node's attributes
             node.remake()
             # Remake edges
@@ -49,16 +51,11 @@ class Stynker:
     def remake_edges(self, node: Node) -> None:
         # Delete existing edges from `node`
         del self.graph[node]
-
-        # Delete existing edges to `node`
-        for source_node in self.reverse_graph[node.name]:
-            print(node)
-            print(source_node)
-            print(self.graph[source_node])
-            self.graph[source_node]#.remove(node.name)
+        for source_node in self.reverse_graph[node]:
+            self.graph[source_node].remove(Edge(node))
 
         # Update reverse_graph
-        del self.reverse_graph[node.name]
+        del self.reverse_graph[node]
 
         for _ in range(randint(*self.edge_range)):
             # A node can be connected to itself?
