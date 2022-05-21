@@ -1,4 +1,7 @@
+import json
 from nodes import Node
+
+
 class Edge:
     """"""
     ALLOWED_ATTRIBUTES = {"weight", "length"}
@@ -13,8 +16,6 @@ class Edge:
         self.node = node
         self.weight = weight
         self.lenght = length
-        self.original_kwargs = kwargs.copy()
-        self.__dict__.update(kwargs)
 
         self.next_steps: list = list()
 
@@ -39,5 +40,4 @@ class Edge:
             "lenght": self.lenght,
             "next_steps": self.next_steps,
         }
-        import json
         return json.dumps(repr_, indent=2)
