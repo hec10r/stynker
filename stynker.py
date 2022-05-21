@@ -1,20 +1,32 @@
+import json
 from collections import defaultdict
+from random import randint, choice
 from nodes import Node
 from edge import Edge
-from typing import Iterable
+from typing import Iterable, List, Tuple
 
 
 class Stynker:
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
         self.graph: defaultdict = defaultdict(set)
+        self.reverse_graph: defaultdict = defaultdict(set)
         self.current_cycle: int = 0
         self.period: str
+        self.empty_nodes: List[Node] = list()
+
+        self.edge_range: Tuple[int] = (1, 3)
+        self.weight_range: Tuple[int] = (10, 20)
+        self.length_range: Tuple[int] = (1, 3)
+
+    def add_empty_node(self, node: Node) -> None:
+        self.empty_nodes.append(node)
 
     def get_nodes(self) -> Iterable[Node]:
         return self.graph.keys()
 
     def get_empty_nodes(self) -> Iterable[Node]:
+        # TODO: deprecate?
         empty_nodes = (
             node
             for node in self.get_nodes()
@@ -25,20 +37,53 @@ class Stynker:
     def add_edge(self, node_1: Node, node_2: Node, **kwargs):
         edge = Edge(node_2, **kwargs)
         self.graph[node_1].add(edge)
+        self.reverse_graph[node_2.name].add(node_1.name)
 
     def remake(self, nodes: Iterable[Node]) -> None:
         for node in nodes:
             # Remake node's attributes
             node.remake()
             # Remake edges
-            self.remake(node)
+            self.remake_edges(node)
 
-    def remake_edges(self, nodes: Iterable[Node]) -> None:
-        # TODO: this should create new edges for selected nodes
-        # - Create new edges from `nodes`
-        # - Create new edges to `nodes`
-        pass
-    
+    def remake_edges(self, node: Node) -> None:
+        # Delete existing edges from `node`
+        del self.graph[node]
+
+        # Delete existing edges to `node`
+        for source_node in self.reverse_graph[node.name]:
+            print(node)
+            print(source_node)
+            print(self.graph[source_node])
+            self.graph[source_node]#.remove(node.name)
+
+        # Update reverse_graph
+        del self.reverse_graph[node.name]
+
+        for _ in range(randint(*self.edge_range)):
+            # A node can be connected to itself?
+            # Add edges from `node`
+            destination_node = choice(list(self.get_nodes()))
+            self.add_edge(
+                node,
+                destination_node,
+                weight=randint(*self.weight_range),
+                length=randint(*self.length_range),
+            )
+
+        # Using different loops since the number of
+        # incoming/outcoming edges may be different
+        for _ in range(randint(*self.edge_range)):
+            # A node can be connected to itself?
+            # # Add edges to `node`
+            source_node = choice(list(self.get_nodes()))
+            self.add_edge(
+                source_node,
+                node,
+                weight=randint(*self.weight_range),
+                length=randint(*self.length_range),
+            )
+
     def run_cycle(self) -> None:
         self.current_cycle += 1
         if self.period == "dream":
@@ -88,12 +133,11 @@ class Stynker:
 
     def _run_wake_cycle(self) -> None:
         # TODO: basically remake empty nodes
-        for node in self.get_empty_nodes():
+        for node in self.empty_nodes:
             # This remake may be different 
             node.remake()
 
     def __repr__(self) -> str:
-        import json
         repr_ = {
             "cycle": self.current_cycle,
             "period": self.period,
