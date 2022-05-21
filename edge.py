@@ -33,6 +33,9 @@ class Edge:
     def __hash__(self) -> int:
         return hash(self.node.name)
 
+    def __eq__(self, other_edge: object) -> bool:
+        return self.node.name == other_edge.node.name
+
     def __repr__(self) -> str:
         repr_ = {
             "to_node": self.node.name,
