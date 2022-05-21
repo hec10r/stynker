@@ -58,8 +58,14 @@ class Stynker:
 
         for _ in range(randint(*self.edge_range)):
             # A node can be connected to itself?
+            # TODO: Optimize this
             # Add edges from `node`
-            destination_node = choice(list(self.get_nodes()))
+            choices = [
+                other_node
+                for other_node in self.get_nodes()
+                if other_node != node
+            ]
+            destination_node = choice(choices)
             self.add_edge(
                 node,
                 destination_node,
@@ -72,7 +78,7 @@ class Stynker:
         for _ in range(randint(*self.edge_range)):
             # A node can be connected to itself?
             # # Add edges to `node`
-            source_node = choice(list(self.get_nodes()))
+            source_node = choice(choices)
             self.add_edge(
                 source_node,
                 node,
