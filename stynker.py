@@ -36,7 +36,6 @@ class Stynker:
 
     def add_edge(self, node_1: Node, node_2: Node, **kwargs):
         edge = Edge(node_2, **kwargs)
-        reverse_edge = Edge(node_1, **kwargs)
         self.graph[node_1].add(edge)
         self.reverse_graph[node_2].add(node_1)
 
