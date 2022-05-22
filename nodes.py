@@ -33,7 +33,7 @@ class Node:
         self.increase_level(self.endo)
     
     def increase_level(self, q: int) -> None:
-        self.level += q
+        self.level = max(self.level + q, 0)
 
     def remake(self) -> None:
         self.size = randint(*self.size_range)
