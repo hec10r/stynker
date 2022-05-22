@@ -133,6 +133,10 @@ class Stynker:
         # Pick first n nodes with less damage and remake
         self.remake(ordered_nodes[:n_remakes])
 
+        # Restart damage to 0
+        for node in self.get_nodes():
+            node.damage = 0
+
     def _run_wake_cycle(self) -> None:
         # TODO: basically remake empty nodes
         for node in self.empty_nodes:
