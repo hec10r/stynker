@@ -1,23 +1,24 @@
+from __future__ import annotations
 import json
 from typing import Tuple, Union
 from random import randint
 
 
 class Node:
-    def __init__(self, **kwargs):
-        # TODO: decide how to define this
+    def __init__(
+        self,
+        name: str,
+        size: int,
+        endo: int,
+        **kwargs
+    ):        
+        self.name: str = name
+        self.size: int = size
+        self.endo: int = endo
+        self.type: Union[str, None] = None
+        self.active: Union[bool, None] = None
         self.__dict__.update(**kwargs)
-        self.name: str
-        self.size: int
-        self.endo: int
-        self.type: Union[str, None]
-        self.active: bool
 
-        self.size_range: Tuple[int] = (10, 20)
-        self.endo_range: Tuple[int] = (1, 3)
-
-        self.type = None
-        self.active = None
         self.level: int = 0
         self.damage: int = 0
         
@@ -30,6 +31,7 @@ class Node:
         self.damage += 1
 
     def dream_cycle(self):
+        """Increase the `level` by `endo`"""
         self.increase_level(self.endo)
     
     def increase_level(self, q: int) -> None:
@@ -45,16 +47,13 @@ class Node:
     def is_output(self) -> bool:
         return self.type == "output"
 
-    def is_empty(self) -> bool:
-        # TODO:
-        # Logic to define if a node is empty
-        pass
-
     def __hash__(self) -> int:
         return hash(self.name)
 
-    def __eq__(self, other_node) -> bool:
-        return self.name == other_node.name
+    def __eq__(self, other_node: Node) -> bool:
+        if isinstance(other_node, Node):
+            return self.name == other_node.name
+        raise TypeError(f"Node is not comparable to type {type(other_node)}")
 
     def __repr__(self) -> str:
         repr_ = {
