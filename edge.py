@@ -23,8 +23,9 @@ class Edge:
         return hash(self.node.name)
 
     def dream_cycle(self) -> None:
-        cnt = sum([1 for el in self.next_steps if el == 1])
-        self.node.level += cnt * self.weight
+        trickles_arriving = 1 in self.next_steps
+        if trickles_arriving:
+            self.node.level += self.weight
         self.next_steps = [el - 1 for el in self.next_steps if el != 1]
 
     def load(self) -> None:
