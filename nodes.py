@@ -7,7 +7,7 @@ from random import randint
 class Node:
     def __init__(
         self,
-        name: str,
+        name: int,
         size: int,
         endo: int,
         **kwargs
