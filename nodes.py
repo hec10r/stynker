@@ -12,7 +12,7 @@ class Node:
         size: int,
         endo: int,
         **kwargs
-    ):        
+    ) -> None:
         self.name: str = name
         self.size: int = size
         self.endo: int = endo
