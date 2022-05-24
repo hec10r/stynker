@@ -8,9 +8,10 @@ from constants import edge_constants, node_constants
 
 
 class Stynker:
-    def __init__(self, n_nodes: int, **kwargs):
+    def __init__(self, n_nodes: int, n_remakes: int, **kwargs):
         self.__dict__.update(kwargs)
         self.n_nodes = n_nodes
+        self.n_remakes = n_remakes
         self.current_cycle: int = 0
         self.graph: defaultdict = defaultdict(set) # Node -> {set of Edges}
         self.reverse_graph: defaultdict = defaultdict(set) # Node -> {set of Nodes}
@@ -20,6 +21,7 @@ class Stynker:
 
         # Make graph
         for i in range(self.n_nodes):
+            # TODO: Add logic for input and output nodes
             node = Node(
                 name=i,
                 size=randint(*node_constants["size_range"]),
@@ -38,6 +40,7 @@ class Stynker:
     def add_edge(self, node_1: Node, node_2: Node, **kwargs):
         edge = Edge(node_2, **kwargs)
         self.graph[node_1].add(edge)
+        # print(f"Adding edge from {node_1} to {node_2}")
         self.reverse_graph[node_2].add(node_1)
 
     def remake(self, nodes: Iterable[Node]) -> None:
@@ -127,7 +130,6 @@ class Stynker:
 
     def _run_sleep_cycle(
         self,
-        n_remakes: int = 1,
         select_random: bool = False
     ) -> None:
         if select_random:
@@ -142,7 +144,7 @@ class Stynker:
                 key=damage_order
             )
             # Pick first n nodes with less damage
-            nodes_to_remake = ordered_nodes[:n_remakes]
+            nodes_to_remake = ordered_nodes[:self.n_remakes]
         
         # Remake selected nodes
         self.remake(nodes_to_remake)
