@@ -27,6 +27,9 @@ class Stynker:
             )
             self.graph[node] = set()
             self.nodes_dict[i] = node
+        
+        # Make random outcoming edges
+        for node in self.graph.keys():
             self.make_random_outcoming_edges(node)
 
     def get_nodes(self) -> Iterable[Node]:
