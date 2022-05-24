@@ -3,36 +3,34 @@ from collections import defaultdict
 from random import randint, choice
 from nodes import Node
 from edge import Edge
-from typing import Iterable, List, Tuple
+from typing import Iterable, List
+from constants import edge_constants, node_constants
 
 
 class Stynker:
-    def __init__(self, **kwargs):
+    def __init__(self, n_nodes: int, **kwargs):
         self.__dict__.update(kwargs)
+        self.n_nodes = n_nodes
+        self.current_cycle: int = 0
         self.graph: defaultdict = defaultdict(set) # Node -> {set of Edges}
         self.reverse_graph: defaultdict = defaultdict(set) # Node -> {set of Nodes}
-        self.current_cycle: int = 0
+        self.nodes_dict = dict()
         self.period: str
-        self.empty_nodes: List[Node] = list()
 
-        self.edge_range: Tuple[int] = (1, 3)
-        self.weight_range: Tuple[int] = (1, 3)
-        self.length_range: Tuple[int] = (1, 3)
 
-    def add_empty_node(self, node: Node) -> None:
-        self.empty_nodes.append(node)
+        # Make graph
+        for i in range(self.n_nodes):
+            node = Node(
+                name=i,
+                size=randint(*node_constants["size_range"]),
+                endo=randint(*node_constants["endo_range"]),
+            )
+            self.graph[node] = set()
+            self.nodes_dict[i] = node
+            self.make_random_outcoming_edges(node)
 
     def get_nodes(self) -> Iterable[Node]:
         return self.graph.keys()
-
-    def get_empty_nodes(self) -> Iterable[Node]:
-        # TODO: deprecate?
-        empty_nodes = (
-            node
-            for node in self.get_nodes()
-            if node.is_empty()
-        )
-        return empty_nodes
 
     def add_edge(self, node_1: Node, node_2: Node, **kwargs):
         edge = Edge(node_2, **kwargs)
@@ -53,38 +51,41 @@ class Stynker:
         for source_node in self.reverse_graph[node]:
             self.graph[source_node].remove(Edge(node))
 
-        # Update reverse_graph
-        del self.reverse_graph[node]
+        # Clean reverse_graph
+        self.reverse_graph[node] = set()
 
-        for _ in range(randint(*self.edge_range)):
-            # A node can be connected to itself?
-            # TODO: Optimize this
-            # Add edges from `node`
-            choices = [
-                other_node
-                for other_node in self.get_nodes()
-                if other_node != node
-            ]
-            destination_node = choice(choices)
+        # Add random edges from `node`
+        self.make_random_outcoming_edges(node)
+
+        # Add random edges to `node`
+        self.make_random_incoming_edges(node)
+        
+    def make_random_outcoming_edges(self, node: Node) -> None:
+        n_edges = randint(*edge_constants["n_edges_range"])
+        for _ in range(n_edges):
+            destination_node = self.get_random_node(node.name)
             self.add_edge(
                 node,
                 destination_node,
-                weight=randint(*self.weight_range),
-                length=randint(*self.length_range),
+                weight=randint(*edge_constants["weight_range"]),
+                length=randint(*edge_constants["length_range"]),
             )
 
-        # Using different loops since the number of
-        # incoming/outcoming edges may be different
-        for _ in range(randint(*self.edge_range)):
-            # A node can be connected to itself?
-            # # Add edges to `node`
-            source_node = choice(choices)
+    def make_random_incoming_edges(self, node):
+        n_edges = randint(*edge_constants["n_edges_range"])
+        for _ in range(n_edges):
+            source_node = self.get_random_node(node.name)
             self.add_edge(
                 source_node,
                 node,
-                weight=randint(*self.weight_range),
-                length=randint(*self.length_range),
+                weight=randint(*edge_constants["weight_range"]),
+                length=randint(*edge_constants["length_range"]),
             )
+
+    def get_random_node(self, current_name: int):
+        options = range(current_name) + range(current_name+1, self.n_nodes)
+        random_number = choice(options)
+        return self.nodes_dict[random_number]
 
     def run_cycle(self) -> None:
         self.current_cycle += 1
@@ -97,7 +98,6 @@ class Stynker:
 
     def _run_dream_cycle(self) -> None:
         for node in self.get_nodes():
-            # Increase the level of each node
             node.dream_cycle()
             for edge in self.graph[node]:
                 # Check if trickles arrive to nodes
@@ -122,16 +122,27 @@ class Stynker:
                 node.active = False
                 
 
-    def _run_sleep_cycle(self, n_remakes: int = 1) -> None:
-        # Sort list of nodes by damage
-        damage_order = lambda node: node.damage
-        ordered_nodes = sorted(
-            [node for node in self.get_nodes()],
-            key=damage_order
-        )
+    def _run_sleep_cycle(
+        self,
+        n_remakes: int = 1,
+        select_random: bool = False
+    ) -> None:
+        if select_random:
+            # TODO: Add support to this
+            raise NotImplementedError
+            nodes_to_remake = 1
+        else:
+            # Sort list of nodes by damage
+            damage_order = lambda node: node.damage
+            ordered_nodes = sorted(
+                [node for node in self.get_nodes()],
+                key=damage_order
+            )
+            # Pick first n nodes with less damage
+            nodes_to_remake = ordered_nodes[:n_remakes]
         
-        # Pick first n nodes with less damage and remake
-        self.remake(ordered_nodes[:n_remakes])
+        # Remake selected nodes
+        self.remake(nodes_to_remake)
 
         # Restart damage to 0
         for node in self.get_nodes():
@@ -139,9 +150,10 @@ class Stynker:
 
     def _run_wake_cycle(self) -> None:
         # TODO: basically remake empty nodes
-        for node in self.empty_nodes:
+        # for node in self.empty_nodes:
             # This remake may be different 
-            node.remake()
+            # node.remake()
+        pass
 
     def __repr__(self) -> str:
         repr_ = {
