@@ -83,7 +83,7 @@ class Stynker:
             )
 
     def get_random_node(self, current_name: int):
-        options = range(current_name) + range(current_name+1, self.n_nodes)
+        options = (i for i in range(self.n_nodes) if i != current_name)
         random_number = choice(options)
         return self.nodes_dict[random_number]
 
