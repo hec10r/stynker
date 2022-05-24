@@ -2,6 +2,7 @@ from __future__ import annotations
 import json
 from typing import Tuple, Union
 from random import randint
+from constants import node_constants
 
 
 class Node:
@@ -38,8 +39,8 @@ class Node:
         self.level = max(self.level + q, 0)
 
     def remake(self) -> None:
-        self.size = randint(*self.size_range)
-        self.endo = randint(*self.endo_range)
+        self.size = randint(*node_constants["size_range"])
+        self.endo = randint(*node_constants["endo_range"])
 
     def is_input(self) -> bool:
         return self.type == "input"
