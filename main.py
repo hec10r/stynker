@@ -24,13 +24,8 @@ def get_edges() -> Iterable[Tuple[Union[Node, Dict[str, int]]]]:
     
 
 if __name__ == "__main__":
-    edges = get_edges()
     # Initialize graph
-    stynker = Stynker(period="dream")
-    for edge_info in edges:
-        node_1, node_2, kwargs = edge_info
-        # Add edges to the graph
-        stynker.add_edge(node_1, node_2, **kwargs)
+    stynker = Stynker(n_nodes=4, period="dream")
 
     # Variable to save final results
     results = [json.loads(str(stynker))]
