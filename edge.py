@@ -11,11 +11,9 @@ class Edge:
         weight: int = None,
         length: int = None,
     ) -> None:
-
         self.node = node
         self.weight = weight
         self.length = length
-
         self.next_steps: list = list()
 
     def dream_cycle(self) -> None:
