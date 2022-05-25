@@ -1,10 +1,10 @@
 import json
-from typing import Dict, Iterable, Tuple, Union
+from typing import Dict, List, Tuple, Union
 from stynker import Stynker
 from nodes import Node
 
 
-def get_edges() -> Iterable[Tuple[Union[Node, Dict[str, int]]]]:
+def get_edges() -> List[Tuple[Node, Node, Dict[str, int]]]:
     # Create nodes as specified in the slides
     node_2: Node = Node(size=13, endo=1, name=2)
     node_5: Node = Node(size=17, endo=3, name=5)
@@ -21,7 +21,7 @@ def get_edges() -> Iterable[Tuple[Union[Node, Dict[str, int]]]]:
         (node_8, node_5, {"weight": 3, "length": 1}),
     ]
     return edge_info
-    
+
 
 if __name__ == "__main__":
     # Initialize graph

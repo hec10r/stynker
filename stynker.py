@@ -3,7 +3,7 @@ from collections import defaultdict
 from random import choice, randint, sample
 from nodes import Node
 from edge import Edge
-from typing import Iterable, List
+from typing import Iterable
 from constants import edge_constants, node_constants
 
 
@@ -24,8 +24,8 @@ class Stynker:
         self.n_remakes = n_remakes
         self.random_sleep = random_sleep
         self.current_cycle: int = 0
-        self.graph: defaultdict = defaultdict(set) # Node -> {set of Edges}
-        self.reverse_graph: defaultdict = defaultdict(set) # Node -> {set of Nodes}
+        self.graph: defaultdict = defaultdict(set)  # Node -> {set of Edges}
+        self.reverse_graph: defaultdict = defaultdict(set)  # Node -> {set of Nodes}
         self.nodes_dict = dict()
 
         # Make graph
@@ -36,10 +36,10 @@ class Stynker:
             # Mark following `n_output` nodes as output
             elif i < n_output:
                 node_type = "output"
-            else:
             # Mark the rest as regular
+            else:
                 node_type = "regular"
-            
+
             node = Node(
                 name=i,
                 size=randint(*node_constants["size_range"]),
@@ -48,7 +48,7 @@ class Stynker:
             )
             self.graph[node] = set()
             self.nodes_dict[i] = node
-        
+
         # Make random outcoming edges
         for node in self.graph.keys():
             self.make_random_outcoming_edges(node)
@@ -84,7 +84,7 @@ class Stynker:
 
         # Add random edges to `node`
         self.make_random_incoming_edges(node)
-        
+
     def make_random_outcoming_edges(self, node: Node) -> None:
         n_edges = randint(*edge_constants["n_edges_range"])
         for _ in range(n_edges):
@@ -119,7 +119,7 @@ class Stynker:
         elif self.period == "sleep":
             self._run_sleep_cycle()
         elif self.period == "wake":
-            self._run_wake_cycle
+            self._run_wake_cycle()
 
     def _run_dream_cycle(self) -> None:
         for node in self.get_nodes():
@@ -128,10 +128,10 @@ class Stynker:
                 # Check if trickles arrive to nodes
                 edge.dream_cycle()
             # Check the inputs for T values
-            if node.is_input and node.is_active: 
+            if node.is_input and node.is_active:
                 node.increase_level(10)
                 node.is_active = False
-        
+
         for node in self.get_nodes():
             # Check if the node is full
             if node.is_full():
@@ -145,7 +145,6 @@ class Stynker:
                     edge.load()
             elif node.is_output:
                 node.is_active = False
-                
 
     def _run_sleep_cycle(self) -> None:
         if self.random_sleep:
@@ -159,7 +158,7 @@ class Stynker:
             )
             # Pick first n nodes with less damage
             nodes_to_remake = ordered_nodes[:self.n_remakes]
-        
+
         # Remake selected nodes
         self.remake(nodes_to_remake)
 
@@ -168,10 +167,7 @@ class Stynker:
             node.damage = 0
 
     def _run_wake_cycle(self) -> None:
-        # TODO: basically remake empty nodes
-        # for node in self.empty_nodes:
-            # This remake may be different 
-            # node.remake()
+        # TODO: implement wake cycle
         pass
 
     def __repr__(self) -> str:

@@ -1,6 +1,5 @@
 from __future__ import annotations
 import json
-from typing import Tuple, Union
 from random import randint
 from constants import node_constants
 
@@ -25,7 +24,6 @@ class Node:
 
         self.level: int = 0
         self.damage: int = 0
-        
 
     def is_full(self) -> bool:
         return self.level >= self.size
