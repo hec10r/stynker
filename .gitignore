@@ -130,3 +130,6 @@ dmypy.json
 
 # Program output
 results.json
+
+# PyCharm stuff
+.idea/
