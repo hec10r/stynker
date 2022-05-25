@@ -1,6 +1,6 @@
 import json
 from collections import defaultdict
-from random import randint, choice
+from random import choice, randint, sample
 from nodes import Node
 from edge import Edge
 from typing import Iterable, List
@@ -8,16 +8,23 @@ from constants import edge_constants, node_constants
 
 
 class Stynker:
-    def __init__(self, n_nodes: int, n_remakes: int, **kwargs):
+    def __init__(
+        self,
+        n_nodes: int,
+        period: str,
+        n_remakes: int,
+        random_sleep: bool = False,
+        **kwargs
+    ) -> None:
         self.__dict__.update(kwargs)
         self.n_nodes = n_nodes
-        self.n_remakes = n_remakes
+        self.period = period
+        self.n_remakes = n_remakes        
+        self.random_sleep = random_sleep
         self.current_cycle: int = 0
         self.graph: defaultdict = defaultdict(set) # Node -> {set of Edges}
         self.reverse_graph: defaultdict = defaultdict(set) # Node -> {set of Nodes}
         self.nodes_dict = dict()
-        self.period: str
-
 
         # Make graph
         for i in range(self.n_nodes):
@@ -128,14 +135,9 @@ class Stynker:
                 node.active = False
                 
 
-    def _run_sleep_cycle(
-        self,
-        select_random: bool = False
-    ) -> None:
-        if select_random:
-            # TODO: Add support to this
-            raise NotImplementedError
-            nodes_to_remake = 1
+    def _run_sleep_cycle(self) -> None:
+        if self.random_sleep:
+            nodes_to_remake = sample(list(self.get_nodes()), self.n_remakes)
         else:
             # Sort list of nodes by damage
             damage_order = lambda node: node.damage
