@@ -1,5 +1,5 @@
 import json
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List, Tuple
 from stynker import Stynker
 from nodes import Node
 
