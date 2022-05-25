@@ -25,11 +25,18 @@ def get_edges() -> Iterable[Tuple[Union[Node, Dict[str, int]]]]:
 
 if __name__ == "__main__":
     # Initialize graph
-    stynker = Stynker(n_nodes=4, n_remakes=1, period="dream")
+    stynker = Stynker(
+        n_nodes=1000,
+        period="dream",
+        n_remakes=10,
+        n_input=5,
+        n_output=5,
+        random_sleep=False,
+    )
 
     # Variable to save final results
     results = [json.loads(str(stynker))]
-    for _ in range(15):
+    for _ in range(100):
         stynker.run_cycle()
         results.append(json.loads(str(stynker)))
 
