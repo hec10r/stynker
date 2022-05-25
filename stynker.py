@@ -13,13 +13,15 @@ class Stynker:
         n_nodes: int,
         period: str,
         n_remakes: int,
+        n_input: int,
+        n_output: int,
         random_sleep: bool = False,
         **kwargs
     ) -> None:
         self.__dict__.update(kwargs)
         self.n_nodes = n_nodes
         self.period = period
-        self.n_remakes = n_remakes        
+        self.n_remakes = n_remakes
         self.random_sleep = random_sleep
         self.current_cycle: int = 0
         self.graph: defaultdict = defaultdict(set) # Node -> {set of Edges}
@@ -28,11 +30,21 @@ class Stynker:
 
         # Make graph
         for i in range(self.n_nodes):
-            # TODO: Add logic for input and output nodes
+            # Mark first `n_input` nodes as input
+            if i < n_input:
+                node_type = "input"
+            # Mark following `n_output` nodes as output
+            elif i < n_output:
+                node_type = "output"
+            else:
+            # Mark the rest as regular
+                node_type = "regular"
+            
             node = Node(
                 name=i,
                 size=randint(*node_constants["size_range"]),
                 endo=randint(*node_constants["endo_range"]),
+                node_type=node_type,
             )
             self.graph[node] = set()
             self.nodes_dict[i] = node
@@ -116,23 +128,23 @@ class Stynker:
                 # Check if trickles arrive to nodes
                 edge.dream_cycle()
             # Check the inputs for T values
-            if node.is_input() and node.active: 
+            if node.is_input and node.is_active: 
                 node.increase_level(10)
-                node.active = False
+                node.is_active = False
         
         for node in self.get_nodes():
             # Check if the node is full
             if node.is_full():
                 # Mark output node as active if it spills
-                if node.is_output():
-                    node.activate = True
+                if node.is_output:
+                    node.is_active = True
                 # Spill full nodes
                 node.spill()
                 for edge in self.graph[node]:
                     # Edges get loaded with trickles
                     edge.load()
-            elif node.is_output():
-                node.active = False
+            elif node.is_output:
+                node.is_active = False
                 
 
     def _run_sleep_cycle(self) -> None:

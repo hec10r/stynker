@@ -11,13 +11,16 @@ class Node:
         name: int,
         size: int,
         endo: int,
+        node_type: str = "regular",
         **kwargs
     ) -> None:
-        self.name: str = name
-        self.size: int = size
-        self.endo: int = endo
-        self.type: Union[str, None] = None
-        self.active: Union[bool, None] = None
+        self.name = name
+        self.size = size
+        self.endo = endo
+        self.type = node_type
+        self.is_input = node_type == "input"
+        self.is_output = node_type == "output"
+        self.is_active = False
         self.__dict__.update(**kwargs)
 
         self.level: int = 0
@@ -42,12 +45,6 @@ class Node:
         self.size = randint(*node_constants["size_range"])
         self.endo = randint(*node_constants["endo_range"])
 
-    def is_input(self) -> bool:
-        return self.type == "input"
-        
-    def is_output(self) -> bool:
-        return self.type == "output"
-
     def __hash__(self) -> int:
         return hash(self.name)
 
@@ -62,7 +59,7 @@ class Node:
             "size": self.size,
             "endo": self.endo,
             "type": self.type,
-            "active": self.active,
+            "active": self.is_active,
             "level": self.level,
             "damage": self.damage,
         }
