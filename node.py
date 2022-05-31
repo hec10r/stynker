@@ -78,7 +78,7 @@ class Node:
 
     def __hash__(self) -> int:
         """
-        Use the name of the node as it hash.
+        Use the name of the node as its hash.
         Notice that two nodes with the same name will be considered
         equal independently of their `level`, `size`, `endo`, etc
         """
