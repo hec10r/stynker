@@ -1,6 +1,6 @@
 from __future__ import annotations
 import json
-from nodes import Node
+from node import Node
 
 
 class Edge:
