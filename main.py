@@ -36,6 +36,8 @@ if __name__ == "__main__":
 
     # Variable to save final results
     results = [json.loads(str(stynker))]
+
+    # Run multiple cycles
     for _ in range(100):
         stynker.run_cycle()
         results.append(json.loads(str(stynker)))
