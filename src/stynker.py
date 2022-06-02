@@ -44,6 +44,9 @@ class Stynker:
         self.reverse_graph: defaultdict = defaultdict(set)  # Node -> {set of Nodes}
         self.nodes_dict = dict()
 
+        if self.n_nodes == -1:
+            return
+
         # Make graph
         for i in range(self.n_nodes):
             # Mark first `n_input` nodes as input
