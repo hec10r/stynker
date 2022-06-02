@@ -1,8 +1,8 @@
 import json
 from collections import defaultdict
 from random import choice, randint, sample
-from node import Node
-from edge import Edge
+from .node import Node
+from .edge import Edge
 from typing import Iterable
 from constants import edge_constants, node_constants
 
