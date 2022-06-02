@@ -8,6 +8,7 @@ from constants import edge_constants, node_constants
 
 
 class Stynker:
+    """Main object that represents intelligent life"""
     def __init__(
         self,
         n_nodes: int,
@@ -18,6 +19,21 @@ class Stynker:
         random_sleep: bool = False,
         **kwargs
     ) -> None:
+        """
+        Graph that represent an intelligent life
+
+        Args:
+            n_nodes: number of nodes to initialize the graph with.
+                If -1, an empty graph is created
+            period: name of the period to initialize the graph with.
+                Must be one of the following: dream | sleep | wake
+            n_remakes: number of nodes to remake in the sleep cycle
+            n_input: number of node of type input
+            n_output: number of node of type output
+            random_sleep: if True, remake random nodes while in sleep cycle.
+                If False, remake those with less damage
+            **kwargs:
+        """
         self.__dict__.update(kwargs)
         self.n_nodes = n_nodes
         self.period = period
@@ -54,15 +70,30 @@ class Stynker:
             self.make_random_outcoming_edges(node)
 
     def get_nodes(self) -> Iterable[Node]:
+        """Return the nodes of the graph"""
         return self.graph.keys()
 
     def add_edge(self, node_1: Node, node_2: Node, **kwargs):
+        """
+        Add an edge between two existing nodes with
+        additional keyword arguments
+
+        Args:
+            node_1: source node
+            node_2: destination node
+            **kwargs: keywords to pass to the Edge constructor
+        """
         edge = Edge(node_2, **kwargs)
         self.graph[node_1].add(edge)
         # print(f"Adding edge from {node_1} to {node_2}")
         self.reverse_graph[node_2].add(node_1)
 
     def remake(self, nodes: Iterable[Node]) -> None:
+        """
+        Remake a list of nodes using `Node.remake()` method
+        Args:
+            nodes: Iterable with instances of `Node`
+        """
         for node in nodes:
             print(f"Remaking node: {node}")
             # Remake node's attributes
@@ -71,6 +102,11 @@ class Stynker:
             self.remake_edges(node)
 
     def remake_edges(self, node: Node) -> None:
+        """
+        Remake incoming and outcoming edges for `node`.
+        Args:
+            node: instance of `Node`
+        """
         # Delete existing edges from `node`
         del self.graph[node]
         for source_node in self.reverse_graph[node]:
@@ -86,6 +122,11 @@ class Stynker:
         self.make_random_incoming_edges(node)
 
     def make_random_outcoming_edges(self, node: Node) -> None:
+        """
+        For a given node, creates random outcoming edges
+        Args:
+            node: instance of `Node`
+        """
         n_edges = randint(*edge_constants["n_edges_range"])
         for _ in range(n_edges):
             destination_node = self.get_random_node(node.name)
@@ -97,6 +138,11 @@ class Stynker:
             )
 
     def make_random_incoming_edges(self, node):
+        """
+        For a given node, creates random incoming edges
+        Args:
+            node: instance of `Node`
+        """
         n_edges = randint(*edge_constants["n_edges_range"])
         for _ in range(n_edges):
             source_node = self.get_random_node(node.name)
@@ -108,11 +154,19 @@ class Stynker:
             )
 
     def get_random_node(self, current_name: int):
+        """
+        Get a random node except for a given one
+        Args:
+            current_name: integer that represents a node in the graph
+        """
         options = [i for i in range(self.n_nodes) if i != current_name]
         random_number = choice(options)
         return self.nodes_dict[random_number]
 
     def run_cycle(self) -> None:
+        """
+        Depending on the `period` run the required logic
+        """
         self.current_cycle += 1
         if self.period == "dream":
             self._run_dream_cycle()
@@ -122,6 +176,7 @@ class Stynker:
             self._run_wake_cycle()
 
     def _run_dream_cycle(self) -> None:
+        """Run the dream cycle"""
         for node in self.get_nodes():
             node.dream_cycle()
             for edge in self.graph[node]:
@@ -147,6 +202,7 @@ class Stynker:
                 node.is_active = False
 
     def _run_sleep_cycle(self) -> None:
+        """Run the sleep cycle"""
         if self.random_sleep:
             nodes_to_remake = sample(list(self.get_nodes()), self.n_remakes)
         else:
@@ -167,10 +223,17 @@ class Stynker:
             node.damage = 0
 
     def _run_wake_cycle(self) -> None:
+        """Run the wake cycle"""
         # TODO: implement wake cycle
         pass
 
     def __repr__(self) -> str:
+        """
+        Overload the repr method to display useful information
+        about the `Stynker`
+        Returns:
+            JSON representation of a `Stynker`
+        """
         repr_ = {
             "cycle": self.current_cycle,
             "period": self.period,
