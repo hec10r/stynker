@@ -1,7 +1,7 @@
 import json
 from typing import Dict, List, Tuple
-from stynker import Stynker
-from node import Node
+from src import Stynker
+from src import Node
 
 
 def get_edges() -> List[Tuple[Node, Node, Dict[str, int]]]:
