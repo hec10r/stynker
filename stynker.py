@@ -133,7 +133,7 @@ class Stynker:
         # TODO: implement wake cycle
         pass
 
-    def add_edge(self, node_1: Node, node_2: Node, **kwargs):
+    def add_edge(self, node_1: Node, node_2: Node, **kwargs) -> None:
         """
         Add an edge between two existing nodes with
         additional keyword arguments
@@ -152,7 +152,7 @@ class Stynker:
         """Return the nodes of the graph"""
         return self.graph.keys()
 
-    def get_random_node(self, current_name: int):
+    def get_random_node(self, current_name: int) -> Node:
         """
         Get a random node except for a given one
         Args:
@@ -211,7 +211,7 @@ class Stynker:
                 length=randint(*edge_constants["length_range"]),
             )
 
-    def make_random_incoming_edges(self, node):
+    def make_random_incoming_edges(self, node) -> None:
         """
         For a given node, creates random incoming edges
         Args:
