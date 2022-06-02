@@ -69,9 +69,69 @@ class Stynker:
         for node in self.graph.keys():
             self.make_random_outcoming_edges(node)
 
-    def get_nodes(self) -> Iterable[Node]:
-        """Return the nodes of the graph"""
-        return self.graph.keys()
+    def run_cycle(self) -> None:
+        """
+        Depending on the `period` run the required logic
+        """
+        self.current_cycle += 1
+        if self.period == "dream":
+            self._run_dream_cycle()
+        elif self.period == "sleep":
+            self._run_sleep_cycle()
+        elif self.period == "wake":
+            self._run_wake_cycle()
+
+    def _run_dream_cycle(self) -> None:
+        """Run the dream cycle"""
+        for node in self.get_nodes():
+            node.dream_cycle()
+            for edge in self.graph[node]:
+                # Check if trickles arrive to nodes
+                edge.dream_cycle()
+            # Check the inputs for T values
+            if node.is_input and node.is_active:
+                node.increase_level(10)
+                node.is_active = False
+
+        for node in self.get_nodes():
+            # Check if the node is full
+            if node.is_full():
+                # Mark output node as active if it spills
+                if node.is_output:
+                    node.is_active = True
+                # Spill full nodes
+                node.spill()
+                for edge in self.graph[node]:
+                    # Edges get loaded with trickles
+                    edge.load()
+            elif node.is_output:
+                node.is_active = False
+
+    def _run_sleep_cycle(self) -> None:
+        """Run the sleep cycle"""
+        if self.random_sleep:
+            nodes_to_remake = sample(list(self.get_nodes()), self.n_remakes)
+        else:
+            # Sort list of nodes by damage
+            damage_order = lambda node: node.damage
+            ordered_nodes = sorted(
+                [node for node in self.get_nodes()],
+                key=damage_order
+            )
+            # Pick first n nodes with less damage
+            nodes_to_remake = ordered_nodes[:self.n_remakes]
+
+        # Remake selected nodes
+        self.remake(nodes_to_remake)
+
+        # Restart damage to 0
+        for node in self.get_nodes():
+            node.damage = 0
+
+    def _run_wake_cycle(self) -> None:
+        """Run the wake cycle"""
+        # TODO: implement wake cycle
+        pass
 
     def add_edge(self, node_1: Node, node_2: Node, **kwargs):
         """
@@ -87,6 +147,20 @@ class Stynker:
         self.graph[node_1].add(edge)
         # print(f"Adding edge from {node_1} to {node_2}")
         self.reverse_graph[node_2].add(node_1)
+
+    def get_nodes(self) -> Iterable[Node]:
+        """Return the nodes of the graph"""
+        return self.graph.keys()
+
+    def get_random_node(self, current_name: int):
+        """
+        Get a random node except for a given one
+        Args:
+            current_name: integer that represents a node in the graph
+        """
+        options = [i for i in range(self.n_nodes) if i != current_name]
+        random_number = choice(options)
+        return self.nodes_dict[random_number]
 
     def remake(self, nodes: Iterable[Node]) -> None:
         """
@@ -152,80 +226,6 @@ class Stynker:
                 weight=randint(*edge_constants["weight_range"]),
                 length=randint(*edge_constants["length_range"]),
             )
-
-    def get_random_node(self, current_name: int):
-        """
-        Get a random node except for a given one
-        Args:
-            current_name: integer that represents a node in the graph
-        """
-        options = [i for i in range(self.n_nodes) if i != current_name]
-        random_number = choice(options)
-        return self.nodes_dict[random_number]
-
-    def run_cycle(self) -> None:
-        """
-        Depending on the `period` run the required logic
-        """
-        self.current_cycle += 1
-        if self.period == "dream":
-            self._run_dream_cycle()
-        elif self.period == "sleep":
-            self._run_sleep_cycle()
-        elif self.period == "wake":
-            self._run_wake_cycle()
-
-    def _run_dream_cycle(self) -> None:
-        """Run the dream cycle"""
-        for node in self.get_nodes():
-            node.dream_cycle()
-            for edge in self.graph[node]:
-                # Check if trickles arrive to nodes
-                edge.dream_cycle()
-            # Check the inputs for T values
-            if node.is_input and node.is_active:
-                node.increase_level(10)
-                node.is_active = False
-
-        for node in self.get_nodes():
-            # Check if the node is full
-            if node.is_full():
-                # Mark output node as active if it spills
-                if node.is_output:
-                    node.is_active = True
-                # Spill full nodes
-                node.spill()
-                for edge in self.graph[node]:
-                    # Edges get loaded with trickles
-                    edge.load()
-            elif node.is_output:
-                node.is_active = False
-
-    def _run_sleep_cycle(self) -> None:
-        """Run the sleep cycle"""
-        if self.random_sleep:
-            nodes_to_remake = sample(list(self.get_nodes()), self.n_remakes)
-        else:
-            # Sort list of nodes by damage
-            damage_order = lambda node: node.damage
-            ordered_nodes = sorted(
-                [node for node in self.get_nodes()],
-                key=damage_order
-            )
-            # Pick first n nodes with less damage
-            nodes_to_remake = ordered_nodes[:self.n_remakes]
-
-        # Remake selected nodes
-        self.remake(nodes_to_remake)
-
-        # Restart damage to 0
-        for node in self.get_nodes():
-            node.damage = 0
-
-    def _run_wake_cycle(self) -> None:
-        """Run the wake cycle"""
-        # TODO: implement wake cycle
-        pass
 
     def __repr__(self) -> str:
         """
