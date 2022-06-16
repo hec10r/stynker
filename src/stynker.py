@@ -1,9 +1,10 @@
 import json
+import turtle
 from collections import defaultdict
 from random import choice, randint, sample
 from .node import Node
 from .edge import Edge
-from typing import Iterable
+from typing import Iterable, Tuple
 from constants import edge_constants, node_constants
 
 
@@ -16,6 +17,9 @@ class Stynker:
         n_remakes: int,
         n_input: int,
         n_output: int,
+        color: str,
+        initial_position: Tuple[int, int] = (0, 0),
+        show_route: bool = False,
         random_sleep: bool = False,
         **kwargs
     ) -> None:
@@ -43,6 +47,14 @@ class Stynker:
         self.graph: defaultdict = defaultdict(set)  # Node -> {set of Edges}
         self.reverse_graph: defaultdict = defaultdict(set)  # Node -> {set of Nodes}
         self.nodes_dict = dict()
+
+        # Create turtle object
+        self.turtle = turtle.Turtle()
+        self.turtle.color(color)
+        self.turtle.shape("circle")
+        if not show_route:
+            self.turtle.penup()
+        self.turtle.setposition(*initial_position)
 
         if self.n_nodes == -1:
             return
@@ -83,6 +95,15 @@ class Stynker:
             self._run_sleep_cycle()
         elif self.period == "wake":
             self._run_wake_cycle()
+
+    def run_n_cycles(self, n: int) -> None:
+        """
+        Run multiple cycles
+        Args:
+            n: number of cycles to run
+        """
+        for _ in range(n):
+            self.run_cycle()
 
     def _run_dream_cycle(self) -> None:
         """Run the dream cycle"""
