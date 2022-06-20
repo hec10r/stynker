@@ -1,9 +1,6 @@
 import math
 import turtle
 from collections import deque
-from typing import List
-
-from .stynker import Stynker
 
 
 class Environment:
@@ -50,7 +47,6 @@ class Environment:
 
     def draw_borders(self):
         """Draw the borders of the environment"""
-        # Initialize borders
         border = turtle.Turtle()
         border.speed(0)
         border.penup()
