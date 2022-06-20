@@ -66,10 +66,31 @@ class Environment:
 
     @staticmethod
     def distance_to_line(x0, y0, a, b, c) -> float:
+        """
+        Given a point and a line represented in a general form (ax + by + c = 0),
+        get the closest distance from the point to the line
+        Args:
+            x0: x coordinate of the point
+            y0: y coordinate of the point
+            a: `a` parameter from the general form
+            b: `b` parameter from the general form
+            c: `c` parameter from the general form
+        Returns:
+            Distance from the point (x0, y0) to the line represented by the equation
+            ax + by + c = 0
+        """
         distance = abs((a * x0 + b * y0 + c)) / (math.sqrt(a * a + b * b))
         return distance
 
     def touch_border(self, stk: turtle.Turtle) -> bool:
+        """
+        Return whether the turtle is touching the borders of the environment
+        Args:
+            stk: Turtle that represents the Stynker
+        Returns:
+            True if the distance between the Stynker and any of the
+            borders is less than a given threshold. False otherwise
+        """
         x0, y0 = stk.position()
         for a, b, c in self.border_parameters:
             distance = self.distance_to_line(x0, y0, a, b, c)
@@ -79,4 +100,12 @@ class Environment:
 
     @staticmethod
     def is_in_origin(stk: turtle.Turtle) -> bool:
-        return stk.distance((0, 0)) < 25
+        """
+        Return whether the turtle is in (0, 0)
+        Args:
+            stk: Turtle that represents the Stynker
+        Returns:
+            True if the distance between the Stynker and the origin
+            is less than a given threshold. False otherwise
+        """
+        return stk.distance((0, 0)) < 10
