@@ -215,7 +215,14 @@ class Stynker:
         # Delete existing edges from `node`
         del self.graph[node]
         for source_node in self.reverse_graph[node]:
-            self.graph[source_node].remove(Edge(node))
+            # If two nodes: `a`, and `b` are being remake,
+            # and there is an Edge between them, then this
+            # will try to remove an Edge that was already
+            # removed. Skipping this error
+            try:
+                self.graph[source_node].remove(Edge(node))
+            except KeyError:
+                pass
 
         # Clean reverse_graph
         self.reverse_graph[node] = set()
