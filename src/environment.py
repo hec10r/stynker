@@ -87,7 +87,8 @@ class Environment:
 
     def touch_border(self, stk: turtle.Turtle) -> bool:
         """
-        Return whether the turtle is touching the borders of the environment
+        Return whether the Stynker is touching the borders of the environment.
+        Notice that a turtle is a point, not a circle.
         Args:
             stk: Turtle that represents the Stynker
         Returns:
