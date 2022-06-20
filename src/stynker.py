@@ -168,7 +168,6 @@ class Stynker:
         """
         edge = Edge(node_2, **kwargs)
         self.graph[node_1].add(edge)
-        # print(f"Adding edge from {node_1} to {node_2}")
         self.reverse_graph[node_2].add(node_1)
 
     def get_nodes(self) -> Iterable[Node]:
