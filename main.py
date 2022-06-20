@@ -1,4 +1,3 @@
-import json
 import turtle
 from src import Stynker
 from src import Environment
@@ -47,14 +46,14 @@ if __name__ == "__main__":
     stynker_2.run_cycle()
 
     # Change 'period' to wake
-    # stynker.period = "wake"
-    # for _ in range(100):
-    #     stynker.run_cycle()
-
     stynker_1.period = "wake"
     stynker_2.period = "wake"
+
+    # Define two different gravities for the stynkers
     g1 = -0.5
     g2 = -0.8
+
+    # Run wake cycles
     for _ in range(1000):
         stynker_1.run_cycle(gravity=g1)
         stynker_2.run_cycle(gravity=g2)
