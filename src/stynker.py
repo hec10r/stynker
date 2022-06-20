@@ -84,17 +84,17 @@ class Stynker:
         for node in self.graph.keys():
             self.make_random_outcoming_edges(node)
 
-    def run_cycle(self) -> None:
+    def run_cycle(self, **kwargs) -> None:
         """
         Depending on the `period` run the required logic
         """
         self.current_cycle += 1
         if self.period == "dream":
-            self._run_dream_cycle()
+            self._run_dream_cycle(**kwargs)
         elif self.period == "sleep":
-            self._run_sleep_cycle()
+            self._run_sleep_cycle(**kwargs)
         elif self.period == "wake":
-            self._run_wake_cycle()
+            self._run_wake_cycle(**kwargs)
 
     def run_n_cycles(self, n: int) -> None:
         """
@@ -105,7 +105,7 @@ class Stynker:
         for _ in range(n):
             self.run_cycle()
 
-    def _run_dream_cycle(self) -> None:
+    def _run_dream_cycle(self, **kwargs) -> None:
         """Run the dream cycle"""
         for node in self.get_nodes():
             node.dream_cycle()
@@ -131,7 +131,7 @@ class Stynker:
             elif node.is_output:
                 node.is_active = False
 
-    def _run_sleep_cycle(self) -> None:
+    def _run_sleep_cycle(self, **kwargs) -> None:
         """Run the sleep cycle"""
         if self.random_sleep:
             nodes_to_remake = sample(list(self.get_nodes()), self.n_remakes)
@@ -152,10 +152,9 @@ class Stynker:
         for node in self.get_nodes():
             node.damage = 0
 
-    def _run_wake_cycle(self) -> None:
+    def _run_wake_cycle(self, gravity, **kwargs) -> None:
         """Run the wake cycle"""
-        # TODO: implement wake cycle
-        pass
+        self.turtle.sety(self.turtle.ycor() + gravity)
 
     def add_edge(self, node_1: Node, node_2: Node, **kwargs) -> None:
         """
