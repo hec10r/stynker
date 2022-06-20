@@ -4,9 +4,16 @@ from src import Environment
 
 
 if __name__ == "__main__":
+    # Initialize environment
+    environment = Environment()
+    environment.draw_borders()
+
+    # Input parameters
+    n_nodes = int(turtle.textinput("Input", "Number of nodes for the Stynkers:"))
+
     # Initialize Stynkers
     stynker_1 = Stynker(
-        n_nodes=2000,
+        n_nodes=n_nodes,
         period="dream",
         n_remakes=10,
         n_input=8,
@@ -18,7 +25,7 @@ if __name__ == "__main__":
     )
 
     stynker_2 = Stynker(
-        n_nodes=2000,
+        n_nodes=n_nodes,
         period="dream",
         n_remakes=10,
         n_input=8,
@@ -28,9 +35,6 @@ if __name__ == "__main__":
         show_route=False,
         random_sleep=False,
     )
-
-    environment = Environment()
-    environment.draw_borders()
 
     # Run dream cycles
     for _ in range(100):
