@@ -57,7 +57,7 @@ class Node:
         self.level = 0
         self.damage += 1
 
-    def dream_cycle(self) -> None:
+    def run_cycle(self) -> None:
         """Increase the `level` by `endo`"""
         self.increase_level(self.endo)
     

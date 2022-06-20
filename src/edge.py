@@ -27,8 +27,8 @@ class Edge:
         # based on `weight` and `length`
         self.next_steps: list = list()
 
-    def dream_cycle(self) -> None:
-        """Handles the dream cycle"""
+    def run_cycle(self) -> None:
+        """Handles the dream/wake cycles"""
         trickles_arriving = 1 in self.next_steps
         if trickles_arriving:
             self.node.level += self.weight

@@ -108,10 +108,10 @@ class Stynker:
     def _run_dream_cycle(self, **kwargs) -> None:
         """Run the dream cycle"""
         for node in self.get_nodes():
-            node.dream_cycle()
+            node.run_cycle()
             for edge in self.graph[node]:
                 # Check if trickles arrive to nodes
-                edge.dream_cycle()
+                edge.run_cycle()
             # Check the inputs for T values
             if node.is_input and node.is_active:
                 node.increase_level(10)
