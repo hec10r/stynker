@@ -76,6 +76,12 @@ class Node:
         self.size = randint(*node_constants["size_range"])
         self.endo = randint(*node_constants["endo_range"])
 
+    def activate(self) -> None:
+        """
+        Mark node as active if it is input or output
+        """
+        self.is_active = True
+
     def __hash__(self) -> int:
         """
         Use the name of the node as its hash.

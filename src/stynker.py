@@ -184,6 +184,15 @@ class Stynker:
         random_number = choice(options)
         return self.nodes_dict[random_number]
 
+    def activate_node(self, n: int) -> None:
+        """
+        Mark a given node as active if it is input or output
+        Args:
+            n: name of the node to activate
+        """
+        node = self.nodes_dict[n]
+        node.activate()
+
     def remake(self, nodes: Iterable[Node]) -> None:
         """
         Remake a list of nodes using `Node.remake()` method
