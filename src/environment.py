@@ -34,8 +34,11 @@ class Environment:
         c_list = list()
 
         for p1, p2 in zip(self.hexagon_coordinates[:6], list(rotated_coordinates)[:6]):
+            # Slope of the line
             a = (p2[1] - p1[1]) / (p2[0] - p1[0])
+            # -1 constant
             b = -1
+            # Solving for c
             c = p1[1] - a * p1[0]
             a_list.append(a)
             b_list.append(b)
