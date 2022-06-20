@@ -6,11 +6,11 @@ from src import Environment
 if __name__ == "__main__":
     # Initialize Stynkers
     stynker_1 = Stynker(
-        n_nodes=1000,
+        n_nodes=2000,
         period="dream",
         n_remakes=10,
-        n_input=5,
-        n_output=5,
+        n_input=8,
+        n_output=8,
         color="blue",
         initial_position=(0, 0),
         show_route=False,
@@ -18,11 +18,11 @@ if __name__ == "__main__":
     )
 
     stynker_2 = Stynker(
-        n_nodes=1000,
+        n_nodes=2000,
         period="dream",
         n_remakes=10,
-        n_input=5,
-        n_output=5,
+        n_input=8,
+        n_output=8,
         color="purple",
         initial_position=(0, 0),
         show_route=False,
@@ -54,7 +54,7 @@ if __name__ == "__main__":
     g2 = -0.8
 
     # Run wake cycles
-    for _ in range(1000):
+    for _ in range(100000):
         stynker_1.run_cycle(gravity=g1)
         stynker_2.run_cycle(gravity=g2)
         if environment.touch_border(stynker_1.turtle):
