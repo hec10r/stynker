@@ -96,15 +96,6 @@ class Stynker:
         elif self.period == "wake":
             self._run_wake_cycle(**kwargs)
 
-    def run_n_cycles(self, n: int) -> None:
-        """
-        Run multiple cycles
-        Args:
-            n: number of cycles to run
-        """
-        for _ in range(n):
-            self.run_cycle()
-
     def _run_dream_cycle(self, **kwargs) -> None:
         """Run the dream cycle"""
         for node in self.get_nodes():
