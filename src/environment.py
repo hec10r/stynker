@@ -104,6 +104,8 @@ class Environment:
         velocity_vector = stk.vector
         for a, b, c in self.border_parameters:
             distance = self.distance_to_line(x0, y0, a, b, c)
+            # Notice that (a, b) is orthogonal to the border represented
+            # by the equation ax + by + c = 0
             norm = (a**2 + b**2)**0.5
             normal_vector = (a/norm, b/norm)
             if distance < 10:
