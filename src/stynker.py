@@ -97,13 +97,6 @@ class Stynker:
         elif self.period == "wake":
             self._run_wake_cycle(**kwargs)
 
-    def load_nodes(self, **kwargs) -> None:
-        """Run logic for loading nodes"""
-        pass
-
-    def check_nodes(self) -> None:
-        pass
-
     def _run_wake_cycle(self, **kwargs) -> None:
         """Run the wake cycle"""
         # Move in the environment
@@ -111,22 +104,8 @@ class Stynker:
         self.turtle.setx(self.turtle.xcor() + x)
         self.turtle.sety(self.turtle.ycor() + y)
 
-    def _run_dream_cycle(self, **kwargs) -> None:
-        """Run the dream cycle"""
-        # self.load_nodes()
-        # self.check_nodes()
-
         # Load nodes
-        for node in self.get_nodes():
-            # Load based on `endo`
-            node.run_cycle()
-            for edge in self.graph[node]:
-                # Load based on incoming trickles
-                edge.run_cycle()
-            # Load based on input value
-            if node.is_input and node.is_active:
-                node.increase_level(10)
-                node.is_active = False
+        self.load_nodes()
 
         # Check nodes
         for node in self.get_nodes():
@@ -134,14 +113,35 @@ class Stynker:
             if node.is_full():
                 # Mark output node as active if it spills
                 if node.is_output:
-                    node.is_active = True
+                    node.activate()
                 # Spill full nodes
                 node.spill()
                 for edge in self.graph[node]:
                     # Load edges with trickles
                     edge.load()
             elif node.is_output:
-                node.is_active = False
+                self.kick(node.name)
+                node.deactivate()
+
+    def _run_dream_cycle(self, **kwargs) -> None:
+        """Run the dream cycle"""
+        # Load nodes
+        self.load_nodes()
+
+        # Check nodes
+        for node in self.get_nodes():
+            # Check if the node is full
+            if node.is_full():
+                # Mark output node as active if it spills
+                if node.is_output:
+                    node.activate()
+                # Spill full nodes
+                node.spill()
+                for edge in self.graph[node]:
+                    # Load edges with trickles
+                    edge.load()
+            elif node.is_output:
+                node.deactivate()
 
     def _run_sleep_cycle(self, **kwargs) -> None:
         """Run the sleep cycle"""
@@ -164,6 +164,28 @@ class Stynker:
         for node in self.get_nodes():
             node.damage = 0
 
+    def load_nodes(self, **kwargs) -> None:
+        """Run logic for loading nodes"""
+        for node in self.get_nodes():
+            # Load based on `endo`
+            node.run_cycle()
+            for edge in self.graph[node]:
+                # Load based on incoming trickles
+                edge.run_cycle()
+            # Load based on input value
+            if node.is_input and node.is_active:
+                node.increase_level(10)
+                node.deactivate()
+
+    def kick(self, n: int) -> None:
+        current_vector = self.velocity_vector
+        kick_vector = (1, 1)
+        new_vector = (
+            current_vector[0] + kick_vector[0],
+            current_vector[1] + kick_vector[1]
+        )
+        self.velocity_vector = new_vector
+
     def add_edge(self, node_1: Node, node_2: Node, **kwargs) -> None:
         """
         Add an edge between two existing nodes with
@@ -180,7 +202,7 @@ class Stynker:
 
     def get_nodes(self) -> Iterable[Node]:
         """Return the nodes of the graph"""
-        return self.graph.keys()
+        return sample(self.graph.keys(), self.n_nodes)
 
     def get_random_node(self, current_name: int) -> Node:
         """
