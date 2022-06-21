@@ -77,10 +77,15 @@ class Node:
         self.endo = randint(*node_constants["endo_range"])
 
     def activate(self) -> None:
+        """Mark node as active if it is input or output
+        """
+        self.is_active = True
+
+    def deactivate(self) -> None:
         """
         Mark node as active if it is input or output
         """
-        self.is_active = True
+        self.is_active = False
 
     def __hash__(self) -> int:
         """
