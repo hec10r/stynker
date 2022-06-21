@@ -20,15 +20,15 @@ class Environment:
         self.window.tracer(0)
 
         # Hexagon coordinates
-        self.hexagon_coordinates = [
+        self.border_coordinates = [
             (
                 math.cos(math.radians(alpha)) * radius,
                 math.sin(math.radians(alpha)) * radius
             )
-            for alpha in range(0, 420, 60)
+            for alpha in range(0, 360, 60)
         ]
 
-        rotated_coordinates = deque(self.hexagon_coordinates)
+        rotated_coordinates = deque(self.border_coordinates)
         rotated_coordinates.rotate(-1)
 
         # Lists to store parameters of general form equations
@@ -36,7 +36,7 @@ class Environment:
         b_list = list()
         c_list = list()
 
-        for p1, p2 in zip(self.hexagon_coordinates[:6], list(rotated_coordinates)[:6]):
+        for p1, p2 in zip(self.border_coordinates, list(rotated_coordinates)):
             # Slope of the line
             a = (p2[1] - p1[1]) / (p2[0] - p1[0])
             # -1 constant
@@ -57,7 +57,9 @@ class Environment:
         border.speed(0)
         border.penup()
         border.pensize(5)
-        for i, coord in enumerate(self.hexagon_coordinates):
+        # The coordinates of the environment must be `closed`: last one equals to first
+        env_coordinates = self.border_coordinates + [self.border_coordinates[0]]
+        for i, coord in enumerate(env_coordinates):
             if i == 2:
                 border.pencolor("#2dc937")
             elif i == 5:
