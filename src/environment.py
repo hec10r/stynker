@@ -107,8 +107,11 @@ class Environment:
             norm = (a**2 + b**2)**0.5
             normal_vector = (a/norm, b/norm)
             if distance < 10:
-                k = normal_vector[0] * velocity_vector[0] + normal_vector[1] * velocity_vector[1]
-                new_velocity_vector = (-2*normal_vector[0]*k + velocity_vector[0], -2*normal_vector[1]*k + velocity_vector[1])
+                dot_product = normal_vector[0] * velocity_vector[0] + normal_vector[1] * velocity_vector[1]
+                new_velocity_vector = (
+                    velocity_vector[0] - 2 * dot_product * normal_vector[0],
+                    velocity_vector[1] - 2 * dot_product * normal_vector[1]
+                )
                 return new_velocity_vector
         return velocity_vector
 
