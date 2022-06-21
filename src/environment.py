@@ -101,7 +101,7 @@ class Environment:
             otherwise return the current vector
         """
         x0, y0 = stk.turtle.position()
-        velocity_vector = stk.vector
+        velocity_vector = stk.velocity_vector
         for a, b, c in self.border_parameters:
             distance = self.distance_to_line(x0, y0, a, b, c)
             # Notice that (a, b) is orthogonal to the border represented

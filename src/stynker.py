@@ -55,7 +55,7 @@ class Stynker:
         if not show_route:
             self.turtle.penup()
         self.turtle.setposition(*initial_position)
-        self.vector = (0, 0)
+        self.velocity_vector = (0, 0)
 
         if self.n_nodes == -1:
             return
@@ -107,7 +107,7 @@ class Stynker:
     def _run_wake_cycle(self, **kwargs) -> None:
         """Run the wake cycle"""
         # Move in the environment
-        x, y = self.vector
+        x, y = self.velocity_vector
         self.turtle.setx(self.turtle.xcor() + x)
         self.turtle.sety(self.turtle.ycor() + y)
 

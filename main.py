@@ -54,8 +54,8 @@ if __name__ == "__main__":
     stynker_2.period = "wake"
 
     # Define two different gravities for the stynkers
-    stynker_1.vector = (1.5, 0.1)
-    stynker_2.vector = (-2.3, 0.2)
+    stynker_1.velocity_vector = (1.5, 0.1)
+    stynker_2.velocity_vector = (-2.3, 0.2)
 
     # Run wake cycles
     for _ in range(100000):
@@ -67,8 +67,8 @@ if __name__ == "__main__":
         vector_2 = environment.calculate_velocity_vector(stynker_2)
 
         # Update vector
-        stynker_1.vector = vector_1
-        stynker_2.vector = vector_2
+        stynker_1.velocity_vector = vector_1
+        stynker_2.velocity_vector = vector_2
 
         environment.window.update()
 
