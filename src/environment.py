@@ -1,6 +1,9 @@
 import math
 import turtle
 from collections import deque
+from typing import Union, Tuple
+
+from src import Stynker
 
 
 class Environment:
@@ -85,22 +88,29 @@ class Environment:
         distance = abs((a * x0 + b * y0 + c)) / (math.sqrt(a * a + b * b))
         return distance
 
-    def touch_border(self, stk: turtle.Turtle) -> bool:
+    def calculate_velocity_vector(self, stk: Stynker) -> Tuple[float, float]:
         """
-        Return whether the Stynker is touching the borders of the environment.
-        Notice that a turtle is a point, not a circle.
+        If the Stynker touch* a border, calculates its new velocity vector
+
+        *Notice that a turtle is a point, but in this implementation we
+        are treating it as a circle
         Args:
-            stk: Turtle that represents the Stynker
+            stk: Stynker instance
         Returns:
-            True if the distance between the Stynker and any of the
-            borders is less than a given threshold. False otherwise
+            Returns its new velocity vector if it touches a border,
+            otherwise return the current vector
         """
-        x0, y0 = stk.position()
+        x0, y0 = stk.turtle.position()
+        velocity_vector = stk.vector
         for a, b, c in self.border_parameters:
             distance = self.distance_to_line(x0, y0, a, b, c)
+            norm = (a**2 + b**2)**0.5
+            normal_vector = (a/norm, b/norm)
             if distance < 10:
-                return True
-        return False
+                k = normal_vector[0] * velocity_vector[0] + normal_vector[1] * velocity_vector[1]
+                new_velocity_vector = (-2*normal_vector[0]*k + velocity_vector[0], -2*normal_vector[1]*k + velocity_vector[1])
+                return new_velocity_vector
+        return velocity_vector
 
     @staticmethod
     def is_in_origin(stk: turtle.Turtle) -> bool:

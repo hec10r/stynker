@@ -54,17 +54,22 @@ if __name__ == "__main__":
     stynker_2.period = "wake"
 
     # Define two different gravities for the stynkers
-    g1 = -0.5
-    g2 = -0.8
+    stynker_1.vector = (1.5, 0.1)
+    stynker_2.vector = (-2.3, 0.2)
 
     # Run wake cycles
     for _ in range(100000):
-        stynker_1.run_cycle(gravity=g1)
-        stynker_2.run_cycle(gravity=g2)
-        if environment.touch_border(stynker_1.turtle):
-            g1 = -g1
-        if environment.touch_border(stynker_2.turtle):
-            g2 = -g2
+        stynker_1.run_cycle()
+        stynker_2.run_cycle()
+
+        # Check if the stynker bounces and calculate new velocity vector
+        vector_1 = environment.calculate_velocity_vector(stynker_1)
+        vector_2 = environment.calculate_velocity_vector(stynker_2)
+
+        # Update vector
+        stynker_1.vector = vector_1
+        stynker_2.vector = vector_2
+
         environment.window.update()
 
     turtle.done()

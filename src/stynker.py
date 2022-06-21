@@ -55,6 +55,7 @@ class Stynker:
         if not show_route:
             self.turtle.penup()
         self.turtle.setposition(*initial_position)
+        self.vector = (0, 0)
 
         if self.n_nodes == -1:
             return
@@ -96,18 +97,38 @@ class Stynker:
         elif self.period == "wake":
             self._run_wake_cycle(**kwargs)
 
+    def load_nodes(self, **kwargs) -> None:
+        """Run logic for loading nodes"""
+        pass
+
+    def check_nodes(self) -> None:
+        pass
+
+    def _run_wake_cycle(self, **kwargs) -> None:
+        """Run the wake cycle"""
+        # Move in the environment
+        x, y = self.vector
+        self.turtle.setx(self.turtle.xcor() + x)
+        self.turtle.sety(self.turtle.ycor() + y)
+
     def _run_dream_cycle(self, **kwargs) -> None:
         """Run the dream cycle"""
+        # self.load_nodes()
+        # self.check_nodes()
+
+        # Load nodes
         for node in self.get_nodes():
+            # Load based on `endo`
             node.run_cycle()
             for edge in self.graph[node]:
-                # Check if trickles arrive to nodes
+                # Load based on incoming trickles
                 edge.run_cycle()
-            # Check the inputs for T values
+            # Load based on input value
             if node.is_input and node.is_active:
                 node.increase_level(10)
                 node.is_active = False
 
+        # Check nodes
         for node in self.get_nodes():
             # Check if the node is full
             if node.is_full():
@@ -117,7 +138,7 @@ class Stynker:
                 # Spill full nodes
                 node.spill()
                 for edge in self.graph[node]:
-                    # Edges get loaded with trickles
+                    # Load edges with trickles
                     edge.load()
             elif node.is_output:
                 node.is_active = False
@@ -142,10 +163,6 @@ class Stynker:
         # Restart damage to 0
         for node in self.get_nodes():
             node.damage = 0
-
-    def _run_wake_cycle(self, gravity, **kwargs) -> None:
-        """Run the wake cycle"""
-        self.turtle.sety(self.turtle.ycor() + gravity)
 
     def add_edge(self, node_1: Node, node_2: Node, **kwargs) -> None:
         """
