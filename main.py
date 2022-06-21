@@ -54,8 +54,8 @@ if __name__ == "__main__":
     stynker_2.period = "wake"
 
     # Define two different gravities for the stynkers
-    stynker_1.velocity_vector = (1.5, 0.1)
-    stynker_2.velocity_vector = (-2.3, 0.2)
+    stynker_1.velocity_vector = (0.15, 0.01)
+    stynker_2.velocity_vector = (-0.23, 0.02)
 
     # Run wake cycles
     for _ in range(100000):

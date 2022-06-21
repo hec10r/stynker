@@ -1,7 +1,7 @@
 import json
 import turtle
 from collections import defaultdict
-from random import choice, randint, sample
+from random import choice, randint, sample, random
 from .node import Node
 from .edge import Edge
 from typing import Iterable, Tuple
@@ -66,7 +66,7 @@ class Stynker:
             if i < n_input:
                 node_type = "input"
             # Mark following `n_output` nodes as output
-            elif i < n_output:
+            elif i < n_output + n_input:
                 node_type = "output"
             # Mark the rest as regular
             else:
@@ -119,7 +119,7 @@ class Stynker:
                 for edge in self.graph[node]:
                     # Load edges with trickles
                     edge.load()
-            elif node.is_output:
+            if node.is_output:
                 self.kick(node.name)
                 node.deactivate()
 
@@ -179,12 +179,12 @@ class Stynker:
 
     def kick(self, n: int) -> None:
         current_vector = self.velocity_vector
-        kick_vector = (1, 1)
+        kick_vector = ((-1)**randint(1, 2) * random(), (-1)**randint(1, 2) * random())
         new_vector = (
-            current_vector[0] + kick_vector[0],
-            current_vector[1] + kick_vector[1]
+            current_vector[0] - kick_vector[0],
+            current_vector[1] - kick_vector[1]
         )
-        self.velocity_vector = new_vector
+        self.velocity_vector = kick_vector
 
     def add_edge(self, node_1: Node, node_2: Node, **kwargs) -> None:
         """
