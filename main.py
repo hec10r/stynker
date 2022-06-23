@@ -63,12 +63,12 @@ if __name__ == "__main__":
         stynker_2.run_cycle()
 
         # Check if the stynker bounces and calculate new velocity vector
-        vector_1 = environment.calculate_velocity_vector(stynker_1)
-        vector_2 = environment.calculate_velocity_vector(stynker_2)
+        info_1 = environment.get_interaction_information(stynker_1)
+        info_2 = environment.get_interaction_information(stynker_2)
 
         # Update vector
-        stynker_1.velocity_vector = vector_1
-        stynker_2.velocity_vector = vector_2
+        stynker_1.velocity_vector = info_1["final_velocity_vector"]
+        stynker_2.velocity_vector = info_2["final_velocity_vector"]
 
         environment.window.update()
 
