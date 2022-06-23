@@ -1,7 +1,7 @@
 import math
 import turtle
 from collections import deque
-from typing import Union, Tuple
+from typing import Union, Tuple, Dict, Any
 
 from src import Stynker
 
@@ -72,6 +72,86 @@ class Environment:
         self.window.update()
         return border
 
+    def get_interaction_information(self, stk: Stynker) -> Dict[str, Any]:
+        """
+        After a cycle, get the new information from the Stynker after
+        interacting with the environment.
+
+        Currently, returns:
+            - Previous position of the Stynker
+            - Current position of the Stynker
+            - Initial velocity vector
+            - Whether the Stynker bounces with a wall
+            - Final velocity vector
+
+        In the future, it will return:
+            - Whether the Stynker is inside the environment
+            - Whether the Stynker bounces with other Stynker
+
+        Notice that the Stynker is represented by an instance
+        of a turtle, that is a point, but in this implementation
+        we are treating it as a circle
+
+        Args:
+            stk: Stynker instance
+
+        Returns:
+            A dictionary with the information of the Stynker
+            after the interaction with the environment
+        """
+        # Current position
+        x0, y0 = stk.turtle.position()
+        # Current velocity vector
+        velocity_vector = stk.velocity_vector
+        # Position of the Stynker in the previous step
+        px, py = x0 - velocity_vector[0], y0 - velocity_vector[1]
+        # New velocity vector
+        new_velocity_vector = velocity_vector
+        # Did the ball touch the env. border?
+        touch_border = False
+        for a, b, c in self.border_parameters:
+            distance = self.distance_to_line(x0, y0, a, b, c)
+            if distance <= 10:
+                new_velocity_vector = self.calculate_velocity_vector(velocity_vector, a, b)
+                touch_border = True
+
+        result = {
+            "previous_position": (px, py),
+            "position": (x0, y0),
+            "initial_velocity_vector": velocity_vector,
+            "touch_border": touch_border,
+            "final_velocity_vector": new_velocity_vector,
+        }
+        return result
+
+    @staticmethod
+    def calculate_velocity_vector(velocity_vector, a, b) -> Tuple[float, float]:
+        """
+        Given a velocity vector, and the constants that describe a 'wall' in its
+        general form (ax + by + c = 0), returns the new velocity vector after
+        bouncing with the wall
+
+        Args:
+            velocity_vector: velocity vector before the collision
+            a: 'a' from the equation of the wall: ax + by + c = 0
+            b: 'b' from the equation of the wall: ax + by + c = 0
+
+        Returns:
+            The new velocity vector after bouncing with the wall described
+            by the equation ax + by + c = 0
+        """
+        # Notice that (a, b) is orthogonal to the wall represented
+        # by the equation ax + by + c = 0
+        norm = (a ** 2 + b ** 2) ** 0.5
+        normal_vector = (a / norm, b / norm)
+
+        dot_product = normal_vector[0] * velocity_vector[0] + normal_vector[1] * velocity_vector[1]
+        new_velocity_vector = (
+            velocity_vector[0] - 2 * dot_product * normal_vector[0],
+            velocity_vector[1] - 2 * dot_product * normal_vector[1]
+        )
+        return new_velocity_vector
+
     @staticmethod
     def distance_to_line(x0, y0, a, b, c) -> float:
         """
@@ -89,35 +169,6 @@ class Environment:
         """
         distance = abs((a * x0 + b * y0 + c)) / (math.sqrt(a * a + b * b))
         return distance
-
-    def calculate_velocity_vector(self, stk: Stynker) -> Tuple[float, float]:
-        """
-        If the Stynker touch* a border, calculates its new velocity vector
-
-        *Notice that a turtle is a point, but in this implementation we
-        are treating it as a circle
-        Args:
-            stk: Stynker instance
-        Returns:
-            Returns its new velocity vector if it touches a border,
-            otherwise return the current vector
-        """
-        x0, y0 = stk.turtle.position()
-        velocity_vector = stk.velocity_vector
-        for a, b, c in self.border_parameters:
-            distance = self.distance_to_line(x0, y0, a, b, c)
-            # Notice that (a, b) is orthogonal to the border represented
-            # by the equation ax + by + c = 0
-            norm = (a**2 + b**2)**0.5
-            normal_vector = (a/norm, b/norm)
-            if distance < 10:
-                dot_product = normal_vector[0] * velocity_vector[0] + normal_vector[1] * velocity_vector[1]
-                new_velocity_vector = (
-                    velocity_vector[0] - 2 * dot_product * normal_vector[0],
-                    velocity_vector[1] - 2 * dot_product * normal_vector[1]
-                )
-                return new_velocity_vector
-        return velocity_vector
 
     @staticmethod
     def is_in_origin(stk: turtle.Turtle) -> bool:
