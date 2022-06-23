@@ -1,4 +1,5 @@
 import json
+import math
 import turtle
 from collections import defaultdict
 from random import choice, randint, sample, random
@@ -56,17 +57,22 @@ class Stynker:
             self.turtle.penup()
         self.turtle.setposition(*initial_position)
         self.velocity_vector = (0, 0)
+        # Radius of the Stynker
+        self.radius = 10
 
         if self.n_nodes == -1:
             return
 
+        input_nodes = sample(range(1, self.n_nodes + 1), n_input)
+        output_nodes = sample([x for x in range(1, self.n_nodes + 1) if x not in input_nodes], n_output)
+
         # Make graph
         for i in range(self.n_nodes):
             # Mark first `n_input` nodes as input
-            if i < n_input:
+            if i in input_nodes:
                 node_type = "input"
             # Mark following `n_output` nodes as output
-            elif i < n_output + n_input:
+            elif i in output_nodes:
                 node_type = "output"
             # Mark the rest as regular
             else:
@@ -178,11 +184,21 @@ class Stynker:
                 node.deactivate()
 
     def kick(self, n: int) -> None:
+        print(f"Node {n} kicked")
         current_vector = self.velocity_vector
-        kick_vector = ((-1)**randint(1, 2) * random(), (-1)**randint(1, 2) * random())
+        # Get angle
+        alpha = 2 * math.pi * (2*n-1)/(2 * self.n_nodes)
+        print(math.degrees(alpha))
+        print(alpha)
+        # Get kick vector
+        kick_vector = (
+            -math.cos(alpha),
+            -math.sin(alpha)
+        )
+        print(f"Kick vector: {kick_vector}")
         new_vector = (
-            current_vector[0] - kick_vector[0],
-            current_vector[1] - kick_vector[1]
+            current_vector[0] + kick_vector[0],
+            current_vector[1] + kick_vector[1]
         )
         self.velocity_vector = kick_vector
 
