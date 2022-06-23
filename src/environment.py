@@ -109,9 +109,11 @@ class Environment:
         new_velocity_vector = velocity_vector
         # Did the ball touch the env. border?
         touch_border = False
+        # Intersection point with the env. border
+        intersection_point = None
         for a, b, c in self.border_parameters:
             distance = self.distance_to_line(x0, y0, a, b, c)
-            if distance <= 10:
+            if distance <= stk.radius:
                 new_velocity_vector = self.calculate_velocity_vector(velocity_vector, a, b)
                 touch_border = True
 
@@ -119,8 +121,9 @@ class Environment:
             "previous_position": (px, py),
             "position": (x0, y0),
             "initial_velocity_vector": velocity_vector,
-            "touch_border": touch_border,
             "final_velocity_vector": new_velocity_vector,
+            "touch_border": touch_border,
+            "intersection_point": intersection_point,
         }
         return result
 
@@ -171,13 +174,13 @@ class Environment:
         return distance
 
     @staticmethod
-    def is_in_origin(stk: turtle.Turtle) -> bool:
+    def is_in_origin(stk: Stynker) -> bool:
         """
         Return whether the turtle is in (0, 0)
         Args:
-            stk: Turtle that represents the Stynker
+            stk: instance of Stynker
         Returns:
             True if the distance between the Stynker and the origin
-            is less than a given threshold. False otherwise
+            is less than its radius. False otherwise
         """
-        return stk.distance((0, 0)) < 10
+        return stk.turtle.distance((0, 0)) < stk.radius
