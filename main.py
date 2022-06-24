@@ -20,7 +20,7 @@ if __name__ == "__main__":
         n_output=8,
         color="blue",
         initial_position=(0, 0),
-        show_route=False,
+        show_route=True,
         random_sleep=False,
     )
 
