@@ -19,7 +19,7 @@ class Environment:
         self.window.setup(width, height)
         self.window.tracer(0)
 
-        # Hexagon coordinates
+        # Coordinates that define the environment
         self.border_coordinates = [
             (
                 math.cos(math.radians(alpha)) * radius,
@@ -103,10 +103,10 @@ class Environment:
         x0, y0 = stk.turtle.position()
         # Current velocity vector
         velocity_vector = stk.velocity_vector
-        # Position of the Stynker in the previous step
-        px, py = x0 - velocity_vector[0], y0 - velocity_vector[1]
         # New velocity vector
         new_velocity_vector = velocity_vector
+        # Position of the Stynker in the previous step
+        px, py = x0 - velocity_vector[0], y0 - velocity_vector[1]
         # Did the ball touch the env. border?
         touch_border = False
         # Intersection point with the env. border

@@ -205,6 +205,7 @@ class Stynker:
             self.vector_magnitude * a / norm,
             self.vector_magnitude * b / norm
         )
+        # Updates velocity vector
         self.velocity_vector = new_vector
 
     def add_kick_dictionary(self, i: int) -> None:
