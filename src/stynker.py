@@ -40,6 +40,8 @@ class Stynker:
             **kwargs:
         """
         self.__dict__.update(kwargs)
+
+        # Mind of the Stynker
         self.n_nodes = n_nodes
         self.period = period
         self.n_remakes = n_remakes
@@ -48,6 +50,13 @@ class Stynker:
         self.graph: defaultdict = defaultdict(set)  # Node -> {set of Edges}
         self.reverse_graph: defaultdict = defaultdict(set)  # Node -> {set of Nodes}
         self.nodes_dict = dict()
+
+        # Body of the Stynker
+        self.n_input = n_input
+        self.n_output = n_output
+        self.input_nodes = [i for i in range(self.n_input)]
+        self.output_nodes = [i for i in range(self.n_input, self.n_input + self.n_output)]
+        self.kick_dictionary = dict()
 
         # Create turtle object
         self.turtle = turtle.Turtle()
@@ -63,17 +72,15 @@ class Stynker:
         if self.n_nodes == -1:
             return
 
-        input_nodes = sample(range(1, self.n_nodes + 1), n_input)
-        output_nodes = sample([x for x in range(1, self.n_nodes + 1) if x not in input_nodes], n_output)
-
         # Make graph
         for i in range(self.n_nodes):
             # Mark first `n_input` nodes as input
-            if i in input_nodes:
+            if i in self.input_nodes:
                 node_type = "input"
             # Mark following `n_output` nodes as output
-            elif i in output_nodes:
+            elif i in self.output_nodes:
                 node_type = "output"
+                self.add_kick_dictionary(i)
             # Mark the rest as regular
             else:
                 node_type = "regular"
@@ -125,7 +132,7 @@ class Stynker:
                 for edge in self.graph[node]:
                     # Load edges with trickles
                     edge.load()
-            if node.is_output:
+            if node.is_output and node.is_active:
                 self.kick(node.name)
                 node.deactivate()
 
@@ -184,23 +191,41 @@ class Stynker:
                 node.deactivate()
 
     def kick(self, n: int) -> None:
-        print(f"Node {n} kicked")
         current_vector = self.velocity_vector
-        # Get angle
-        alpha = 2 * math.pi * (2*n-1)/(2 * self.n_nodes)
-        print(math.degrees(alpha))
-        print(alpha)
-        # Get kick vector
+        kick_vector = self.kick_dictionary[n]
+        new_vector_raw = (
+            current_vector[0] + kick_vector[0],
+            current_vector[1] + kick_vector[1]
+        )
+        # Normalize vector
+        a, b = new_vector_raw
+        norm = (a ** 2 + b ** 2) ** 0.5
+        norm_vector = (a / norm, b / norm)
+        self.velocity_vector = norm_vector
+
+    def add_kick_dictionary(self, i: int) -> None:
+        """
+        Updates the dictionary with the information about kick vector.
+        Currently, the kick vectors are defined geometrically, by
+        splitting a unitary circle in `self.n_output` equal parts
+        and getting the normal vector from the center of the arc
+        to the origin
+        Args:
+            i: node to update
+        """
+        j = self.output_nodes.index(i)
+        # Calculate angle. It basically splits the circle
+        # in `self.n_output` equal arcs, and get the angle
+        # from the center of the arc with the x-axis
+        alpha = 2 * math.pi * (j + 0.5) / self.n_output
+
+        # Get kick vector. It is the vector from the middle
+        # of the arc to the origin
         kick_vector = (
             -math.cos(alpha),
             -math.sin(alpha)
         )
-        print(f"Kick vector: {kick_vector}")
-        new_vector = (
-            current_vector[0] + kick_vector[0],
-            current_vector[1] + kick_vector[1]
-        )
-        self.velocity_vector = kick_vector
+        self.kick_dictionary[i] = kick_vector
 
     def add_edge(self, node_1: Node, node_2: Node, **kwargs) -> None:
         """
