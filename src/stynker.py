@@ -317,9 +317,11 @@ class Stynker:
 
     def make_random_outcoming_edges(self, node: Node) -> None:
         """
-        For a given node, creates random outcoming edges
+        For a given node, creates random outcoming edges to other nodes.
+        The number of edges, the weight, and the length are chosen
+        randomly from predefined ranges specified in the constants.py file
         Args:
-            node: instance of `Node`
+            node: instance of `Node` to create edges from
         """
         n_edges = randint(*edge_constants["n_edges_range"])
         for _ in range(n_edges):
@@ -331,11 +333,13 @@ class Stynker:
                 length=randint(*edge_constants["length_range"]),
             )
 
-    def make_random_incoming_edges(self, node) -> None:
+    def make_random_incoming_edges(self, node: Node) -> None:
         """
-        For a given node, creates random incoming edges
+        For a given node, creates random incoming edges to the current node.
+        The number of edges, the weight, and the length are chosen
+        randomly from predefined ranges specified in the constants.py file
         Args:
-            node: instance of `Node`
+            node: instance of `Node` to create edges to
         """
         n_edges = randint(*edge_constants["n_edges_range"])
         for _ in range(n_edges):
