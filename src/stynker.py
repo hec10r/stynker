@@ -66,6 +66,7 @@ class Stynker:
             self.turtle.penup()
         self.turtle.setposition(*initial_position)
         self.velocity_vector = (0, 0)
+        self.vector_magnitude = 2.0
         # Radius of the Stynker
         self.radius = 10
 
@@ -200,8 +201,11 @@ class Stynker:
         # Normalize vector
         a, b = new_vector_raw
         norm = (a ** 2 + b ** 2) ** 0.5
-        norm_vector = (a / norm, b / norm)
-        self.velocity_vector = norm_vector
+        new_vector = (
+            self.vector_magnitude * a / norm,
+            self.vector_magnitude * b / norm
+        )
+        self.velocity_vector = new_vector
 
     def add_kick_dictionary(self, i: int) -> None:
         """
