@@ -181,7 +181,7 @@ class Stynker:
         Updates the position of the Stynker based on the velocity vector
         """
         velocity_vector = velocity_vector or self.velocity_vector
-        x, y = self.velocity_vector
+        x, y = velocity_vector
         self.turtle.setx(self.turtle.xcor() + x)
         self.turtle.sety(self.turtle.ycor() + y)
 
