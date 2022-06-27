@@ -113,9 +113,6 @@ class Stynker:
 
     def _run_wake_cycle(self, **kwargs) -> None:
         """Run the wake cycle"""
-        # Move in the environment
-        self.update_position()
-
         # Load nodes
         self.load_nodes()
 
@@ -134,6 +131,9 @@ class Stynker:
             if node.is_output and node.is_active:
                 self.kick(node.name)
                 node.deactivate()
+
+        # Move in the environment
+        self.update_position()
 
     def _run_dream_cycle(self, **kwargs) -> None:
         """Run the dream cycle"""
@@ -176,10 +176,11 @@ class Stynker:
         for node in self.get_nodes():
             node.damage = 0
 
-    def update_position(self) -> None:
+    def update_position(self, velocity_vector: Tuple[float, float] = None) -> None:
         """
         Updates the position of the Stynker based on the velocity vector
         """
+        velocity_vector = velocity_vector or self.velocity_vector
         x, y = self.velocity_vector
         self.turtle.setx(self.turtle.xcor() + x)
         self.turtle.sety(self.turtle.ycor() + y)
