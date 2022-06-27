@@ -35,7 +35,7 @@ if __name__ == "__main__":
         "losing_segment": 5,
     }
     # Initialize environment
-    environment = Environment(**hexagonal_environment)
+    environment = Environment(**maze_environment)
     environment.draw_borders()
 
     # Input parameters
@@ -84,8 +84,8 @@ if __name__ == "__main__":
     stynker_2.period = "wake"
 
     # Define vector magnitude for the Stynkers
-    stynker_1.vector_magnitude = 1.0
-    stynker_2.vector_magnitude = 1.0
+    stynker_1.vector_magnitude = 2.0
+    stynker_2.vector_magnitude = 2.0
 
     # Define two different initial velocity vectors
     stynker_1.velocity_vector = (stynker_1.vector_magnitude, 0)
