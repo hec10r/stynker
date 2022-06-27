@@ -81,7 +81,7 @@ class Stynker:
             # Mark following `n_output` nodes as output
             elif i in self.output_nodes:
                 node_type = "output"
-                self.add_kick_dictionary(i)
+                self.update_kick_dictionary(i)
             # Mark the rest as regular
             else:
                 node_type = "regular"
@@ -214,7 +214,7 @@ class Stynker:
         # Updates velocity vector
         self.velocity_vector = new_vector
 
-    def add_kick_dictionary(self, i: int) -> None:
+    def update_kick_dictionary(self, i: int) -> None:
         """
         Updates the dictionary with the information about kick vector.
         Currently, the kick vectors are defined geometrically, by
