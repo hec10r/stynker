@@ -29,7 +29,7 @@ if __name__ == "__main__":
                 math.cos(math.radians(alpha)) * hexagonal_radius,
                 math.sin(math.radians(alpha)) * hexagonal_radius
             )
-            for alpha in range(0, 360, 60)
+            for alpha in range(0, 420, 60)
         ],
         "winning_segment": 2,
         "losing_segment": 5,
