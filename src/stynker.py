@@ -2,7 +2,7 @@ import json
 import math
 import turtle
 from collections import defaultdict
-from random import choice, randint, sample, random
+from random import choice, randint, sample
 from .node import Node
 from .edge import Edge
 from typing import Iterable, Tuple
