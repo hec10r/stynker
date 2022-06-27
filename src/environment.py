@@ -20,6 +20,8 @@ class Environment:
         self.window = turtle.Screen()
         self.window.setup(width, height)
         self.window.tracer(0)
+
+        # Information about the environment
         self.border_coordinates = border_coordinates
         self.winning_segment = winning_segment
         self.losing_segment = losing_segment
@@ -49,8 +51,7 @@ class Environment:
         border.penup()
         border.pensize(5)
         # The coordinates of the environment must be `closed`: last one equals to first
-        env_coordinates = self.border_coordinates + [self.border_coordinates[0]]
-        for i, coord in enumerate(env_coordinates):
+        for i, coord in enumerate(self.border_coordinates):
             if i == self.winning_segment:
                 border.pencolor("#2dc937")
             elif i == self.losing_segment:
