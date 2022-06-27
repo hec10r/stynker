@@ -178,7 +178,13 @@ class Stynker:
 
     def update_position(self, velocity_vector: Tuple[float, float] = None) -> None:
         """
-        Updates the position of the Stynker based on the velocity vector
+        Updates the position of the Stynker. By default, uses the velocity_vector
+        attribute, but receives an optional parameter to replace it.
+
+        Note: this method does NOT overwrite the velocity_vector attribute
+        Args:
+            velocity_vector: optional parameter to move the Stynker in a different
+                direction than its current velocity_vector
         """
         velocity_vector = velocity_vector or self.velocity_vector
         x, y = velocity_vector
