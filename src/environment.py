@@ -110,10 +110,7 @@ class Environment:
             current_distance = self.distance_to_segment(x0, y0, p1, p2)
             next_distance = self.distance_to_segment(x1, y1, p1, p2)
             if next_distance <= stk.radius:
-                # new_position = self.reflect_point_over_line(x1, y1, a, b, c)
-                # stk.turtle.dot(20, "green")
                 new_velocity_vector = self.calculate_velocity_vector(velocity_vector, a, b)
-                print(new_velocity_vector)
                 touch_border = True
                 continue
 
