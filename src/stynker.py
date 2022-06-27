@@ -132,9 +132,6 @@ class Stynker:
                 self.kick(node.name)
                 node.deactivate()
 
-        # Move in the environment
-        self.update_position()
-
     def _run_dream_cycle(self, **kwargs) -> None:
         """Run the dream cycle"""
         # Load nodes
@@ -176,7 +173,7 @@ class Stynker:
         for node in self.get_nodes():
             node.damage = 0
 
-    def update_position(self, velocity_vector: Tuple[float, float] = None) -> None:
+    def move(self, velocity_vector: Tuple[float, float] = None) -> None:
         """
         Updates the position of the Stynker. By default, uses the velocity_vector
         attribute, but receives an optional parameter to replace it.
@@ -187,9 +184,18 @@ class Stynker:
                 direction than its current velocity_vector
         """
         velocity_vector = velocity_vector or self.velocity_vector
-        x, y = velocity_vector
-        self.turtle.setx(self.turtle.xcor() + x)
-        self.turtle.sety(self.turtle.ycor() + y)
+        dx, dy = velocity_vector
+        self.update_position(self.turtle.xcor() + dx, self.turtle.ycor() + dy)
+
+    def update_position(self, x: float, y: float) -> None:
+        """
+        Change the position of the Stynker to (x, y)
+        Args:
+            x: new x coordinate
+            y: new y coordinate
+        """
+        self.turtle.setx(x)
+        self.turtle.sety(y)
 
     def load_nodes(self, **kwargs) -> None:
         """Run logic for loading nodes"""
@@ -205,6 +211,12 @@ class Stynker:
                 node.deactivate()
 
     def kick(self, n: int) -> None:
+        """
+        Change the direction of the velocity_vector based on the logic
+        described in the kick_dictionary
+        Args:
+            n: output node that was triggered
+        """
         current_vector = self.velocity_vector
         kick_vector = self.kick_dictionary[n]
         new_vector_raw = (
