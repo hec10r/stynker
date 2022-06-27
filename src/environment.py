@@ -1,7 +1,7 @@
 import math
 import turtle
 from collections import deque
-from typing import Union, Tuple, Dict, Any
+from typing import Any, Dict, List, Tuple
 
 from src import Stynker
 
@@ -9,7 +9,9 @@ from src import Stynker
 class Environment:
     def __init__(
         self,
-        radius: int = 360,
+        border_coordinates: List[Tuple[float, float]],
+        winning_segment: int,
+        losing_segment: int,
         **kwargs
     ):
         # Initialize window
@@ -18,15 +20,9 @@ class Environment:
         self.window = turtle.Screen()
         self.window.setup(width, height)
         self.window.tracer(0)
-
-        # Coordinates that define the environment
-        self.border_coordinates = [
-            (
-                math.cos(math.radians(alpha)) * radius,
-                math.sin(math.radians(alpha)) * radius
-            )
-            for alpha in range(0, 360, 60)
-        ]
+        self.border_coordinates = border_coordinates
+        self.winning_segment = winning_segment
+        self.losing_segment = losing_segment
 
         rotated_coordinates = deque(self.border_coordinates)
         rotated_coordinates.rotate(-1)
@@ -37,19 +33,14 @@ class Environment:
         c_list = list()
 
         for p1, p2 in zip(self.border_coordinates, list(rotated_coordinates)):
-            # Slope of the line
-            a = (p2[1] - p1[1]) / (p2[0] - p1[0])
-            # -1 constant
-            b = -1
-            # Solving for c
-            c = p1[1] - a * p1[0]
+            a, b, c = self.get_general_form(p1, p2)
             a_list.append(a)
             b_list.append(b)
             c_list.append(c)
 
-        # For each side of the hexagon, we are getting the
+        # For each border of the environment, we are getting the
         # a, b, c parameters who satisfy ax + by + c = 0
-        self.border_parameters = list(zip(a_list[:6], b_list[:6], c_list[:6]))
+        self.border_parameters = list(zip(a_list[:-1], b_list[:-1], c_list[:-1]))
 
     def draw_borders(self):
         """Draw the borders of the environment"""
@@ -60,9 +51,9 @@ class Environment:
         # The coordinates of the environment must be `closed`: last one equals to first
         env_coordinates = self.border_coordinates + [self.border_coordinates[0]]
         for i, coord in enumerate(env_coordinates):
-            if i == 2:
+            if i == self.winning_segment:
                 border.pencolor("#2dc937")
-            elif i == 5:
+            elif i == self.losing_segment:
                 border.pencolor("#cc3232")
             else:
                 border.pencolor("black")
@@ -103,23 +94,31 @@ class Environment:
         x0, y0 = stk.turtle.position()
         # Current velocity vector
         velocity_vector = stk.velocity_vector
+        # New position
+        x1, y1 = x0 + velocity_vector[0], y0 + velocity_vector[1]
+        new_position = (x1, y1)
         # New velocity vector
         new_velocity_vector = velocity_vector
-        # Position of the Stynker in the previous step
-        px, py = x0 - velocity_vector[0], y0 - velocity_vector[1]
         # Did the ball touch the env. border?
         touch_border = False
         # Intersection point with the env. border
         intersection_point = None
-        for a, b, c in self.border_parameters:
-            distance = self.distance_to_line(x0, y0, a, b, c)
-            if distance <= stk.radius:
+        for i, (a, b, c) in enumerate(self.border_parameters):
+            p1 = self.border_coordinates[i]
+            p2 = self.border_coordinates[i+1]
+            current_distance = self.distance_to_segment(x0, y0, p1, p2)
+            next_distance = self.distance_to_segment(x1, y1, p1, p2)
+            if next_distance <= stk.radius:
+                # new_position = self.reflect_point_over_line(x1, y1, a, b, c)
+                # stk.turtle.dot(20, "green")
                 new_velocity_vector = self.calculate_velocity_vector(velocity_vector, a, b)
+                print(new_velocity_vector)
                 touch_border = True
+                continue
 
         result = {
-            "previous_position": (px, py),
-            "position": (x0, y0),
+            "previous_position": (x0, y0),
+            "new_position": new_position,
             "initial_velocity_vector": velocity_vector,
             "final_velocity_vector": new_velocity_vector,
             "touch_border": touch_border,
@@ -145,7 +144,7 @@ class Environment:
         """
         # Notice that (a, b) is orthogonal to the wall represented
         # by the equation ax + by + c = 0
-        norm = (a ** 2 + b ** 2) ** 0.5
+        norm = math.sqrt(a ** 2 + b ** 2)
         normal_vector = (a / norm, b / norm)
 
         dot_product = normal_vector[0] * velocity_vector[0] + normal_vector[1] * velocity_vector[1]
@@ -154,6 +153,51 @@ class Environment:
             velocity_vector[1] - 2 * dot_product * normal_vector[1]
         )
         return new_velocity_vector
+
+    @staticmethod
+    def distance_to_segment(x0, y0, p1, p2):
+        """
+        Given a point and a segment defined by the points p1 and p2,
+        get the shortest distance to the segment
+        Args:
+            x0: x coordinate of the point
+            y0: y coordinate of the point
+            p1: first point that defines the segment
+            p2: second point that defines the segment
+        Returns:
+            Shortest distance between the point and the segment
+        """
+        a, b, c = Environment.get_general_form(p1, p2)
+        d_line = Environment.distance_to_line(x0, y0, a, b, c)
+        d1 = Environment.distance_to_point(x0, y0, *p1)
+        d2 = Environment.distance_to_point(x0, y0, *p2)
+        d_segment = min(d1, d2)
+        x, y = Environment.projection(x0, y0, a, b, c)
+        is_between_x = p1[0] <= x <= p2[0] or p2[0] <= x <= p1[0]
+        is_between_y = p1[1] <= y <= p2[1] or p2[1] <= y <= p1[1]
+
+        if is_between_x and is_between_y:
+            return d_line
+        return d_segment
+
+    @staticmethod
+    def get_general_form(p1: Tuple[float, float], p2: Tuple[float, float]) -> Tuple[float, float, float]:
+        """
+        Given two points, return the general form of the line defined
+        by them
+        Args:
+            p1: coordinates of the first point
+            p2: coordinates of the second point
+        Returns:
+            a, b, c values such that ax + by + c = 0 represents the line
+            defined by the two points
+        """
+        x1, y1 = p1
+        x2, y2 = p2
+        a = y1 - y2
+        b = x2 - x1
+        c = -a * x1 - b * y1
+        return a, b, c
 
     @staticmethod
     def distance_to_line(x0, y0, a, b, c) -> float:
@@ -170,8 +214,78 @@ class Environment:
             Distance from the point (x0, y0) to the line represented by the equation
             ax + by + c = 0
         """
-        distance = abs((a * x0 + b * y0 + c)) / (math.sqrt(a * a + b * b))
+        return abs(Environment._distance_to_line(x0, y0, a, b, c))
+
+    @staticmethod
+    def _distance_to_line(x0, y0, a, b, c) -> float:
+        """
+        Given a point and a line represented in a general form (ax + by + c = 0),
+        get the closest distance from the point to the line
+        Args:
+            x0: x coordinate of the point
+            y0: y coordinate of the point
+            a: `a` parameter from the general form
+            b: `b` parameter from the general form
+            c: `c` parameter from the general form
+        Returns:
+            Distance from the point (x0, y0) to the line represented by the equation
+            ax + by + c = 0
+        """
+        distance = (a * x0 + b * y0 + c) / math.sqrt(a * a + b * b)
         return distance
+
+    @staticmethod
+    def distance_to_point(x0, y0, x1, y1) -> float:
+        """
+        Given a pair of points, get the distance between them
+        Args:
+            x0: x coordinate of the first point
+            y0: y coordinate of the first point
+            x1: x coordinate of the second point
+            y1: y coordinate of the second point
+        Returns:
+            Distance from point (x0, y0) to point (x1, y1)
+        """
+        return math.sqrt((x0-x1)**2 + (y0-y1)**2)
+
+    @staticmethod
+    def projection(x0, y0, a, b, c) -> Tuple[float, float]:
+        """
+        Get the projection of the point (x0, y0) over the line described
+        by ax + by + c = 0
+        Args:
+            x0: x coordinate of the point
+            y0: y coordinate of the point
+            a: `a` parameter from the general form
+            b: `b` parameter from the general form
+            c: `c` parameter from the general form
+        Returns:
+            Point projected onto the line
+        """
+        d = Environment._distance_to_line(x0, y0, a, b, c)
+        norm = math.sqrt(a**2 + b**2)
+        x = x0 - a*d/norm
+        y = y0 - b*d/norm
+        return x, y
+
+    @staticmethod
+    def reflect_point_over_line(x0, y0, a, b, c) -> Tuple[float, float]:
+        """
+        Given a point and a line represented in a general form (ax + by + c = 0),
+        get the reflection of the point over the line
+        Args:
+            x0: x coordinate of the point
+            y0: y coordinate of the point
+            a: `a` parameter from the general form
+            b: `b` parameter from the general form
+            c: `c` parameter from the general form
+        Returns:
+            Position of the point reflected over the line
+        """
+        norm = (a ** 2 + b ** 2)
+        x = x0 * (b ** 2 - a ** 2) - 2 * a * (b * y0 + c)
+        y = y0 * (a ** 2 - b ** 2) - 2 * b * (a * x0 + c)
+        return x / norm, y / norm
 
     @staticmethod
     def is_in_origin(stk: Stynker) -> bool:
