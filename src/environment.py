@@ -116,9 +116,9 @@ class Environment:
                 new_velocity_vector = self.calculate_velocity_vector(velocity_vector, a, b)
                 new_position = (x0, y0)
                 touch_border = True
-                if i == self.winning_segment:
+                if i == self.winning_segment - 1:
                     won = True
-                if i == self.losing_segment:
+                if i == self.losing_segment - 1:
                     lost = True
                 continue
 
