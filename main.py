@@ -87,10 +87,6 @@ if __name__ == "__main__":
     stynker_1.vector_magnitude = 2.0
     stynker_2.vector_magnitude = 2.0
 
-    # Define two different initial velocity vectors
-    stynker_1.velocity_vector = (stynker_1.vector_magnitude, 0)
-    stynker_2.velocity_vector = (0, -stynker_2.vector_magnitude)
-
     # Run wake cycles
     for _ in range(100000):
         stynker_1.run_cycle()
@@ -105,8 +101,8 @@ if __name__ == "__main__":
         stynker_2.update_position(*info_2["new_position"])
 
         # Update vector
-        stynker_1.velocity_vector = info_1["final_velocity_vector"]
-        stynker_2.velocity_vector = info_2["final_velocity_vector"]
+        stynker_1.update_velocity_vector(info_1["final_velocity_vector"])
+        stynker_2.update_velocity_vector(info_2["final_velocity_vector"])
 
         environment.window.update()
 
