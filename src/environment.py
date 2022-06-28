@@ -100,8 +100,11 @@ class Environment:
         new_position = (x1, y1)
         # New velocity vector
         new_velocity_vector = velocity_vector
+
         # Did the ball touch the env. border?
         touch_border = False
+        won = False
+        lost = False
         # Intersection point with the env. border
         intersection_point = None
         for i, (a, b, c) in enumerate(self.border_parameters):
@@ -109,9 +112,14 @@ class Environment:
             p2 = self.border_coordinates[i+1]
             current_distance = self.distance_to_segment(x0, y0, p1, p2)
             next_distance = self.distance_to_segment(x1, y1, p1, p2)
-            if next_distance <= stk.radius:
+            if next_distance <= stk.radius and next_distance < current_distance:
                 new_velocity_vector = self.calculate_velocity_vector(velocity_vector, a, b)
+                new_position = (x0, y0)
                 touch_border = True
+                if i == self.winning_segment:
+                    won = True
+                if i == self.losing_segment:
+                    lost = True
                 continue
 
         result = {
@@ -120,6 +128,8 @@ class Environment:
             "initial_velocity_vector": velocity_vector,
             "final_velocity_vector": new_velocity_vector,
             "touch_border": touch_border,
+            "won": won,
+            "lost": lost,
             "intersection_point": intersection_point,
         }
         return result
