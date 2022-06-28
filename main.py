@@ -85,6 +85,29 @@ if __name__ == "__main__":
     stynker_1.period = "wake"
     stynker_2.period = "wake"
 
+    required_parameters = [
+        'vector_magnitude',
+        'n_nodes',
+        'period',
+        'n_remakes',
+        'random_sleep',
+        'n_input',
+        'n_output',
+        'velocity_vector',
+        'radius'
+    ]
+
+    def new_stynker(stk, color):
+        d = {
+            key: val
+            for key, val in stk.__dict__.items()
+            if key in required_parameters
+        }
+        d["initial_position"] = (0, 0)
+        d["show_route"] = True
+        d["color"] = color
+        return Stynker(**d)
+
     # Run wake cycles
     for _ in range(100000):
         stynker_1.run_cycle()
@@ -102,20 +125,15 @@ if __name__ == "__main__":
         stynker_1.update_velocity_vector(info_1["final_velocity_vector"])
         stynker_2.update_velocity_vector(info_2["final_velocity_vector"])
 
-        from copy import deepcopy
         # Win / Lose logic
         if info_1["won"]:
-            stynker_2 = deepcopy(stynker_1)
-            stynker_2.update_position(0, 0)
+            stynker_2 = new_stynker(stynker_1, "purple")
         elif info_1["lost"]:
-            stynker_1 = deepcopy(stynker_2)
-            stynker_1.update_position(0, 0)
+            stynker_1 = new_stynker(stynker_2, "blue")
         elif info_2["won"]:
-            stynker_1 = deepcopy(stynker_2)
-            stynker_1.update_position(0, 0)
+            stynker_1 = new_stynker(stynker_2, "blue")
         elif info_2["lost"]:
-            stynker_2 = deepcopy(stynker_1)
-            stynker_2.update_position(0, 0)
+            stynker_2 = new_stynker(stynker_1, "purple")
 
         environment.window.update()
 
