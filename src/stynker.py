@@ -2,7 +2,7 @@ import json
 import math
 import turtle
 from collections import defaultdict
-from random import choice, randint, sample
+from random import choice, randint, random, sample
 from .node import Node
 from .edge import Edge
 from typing import Iterable, Tuple
@@ -52,10 +52,10 @@ class Stynker:
         self.nodes_dict = dict()
 
         # Body of the Stynker
-        self.n_input = n_input
-        self.n_output = n_output
-        self.input_nodes = [i for i in range(self.n_input)]
-        self.output_nodes = [i for i in range(self.n_input, self.n_input + self.n_output)]
+        self.n_input = min(n_input, self.n_nodes)
+        self.n_output = len(range(n_input, min(n_input + n_output, self.n_nodes)))
+        self.input_nodes = list()
+        self.output_nodes = list()
         self.kick_dictionary = dict()
 
         # Create turtle object
@@ -65,8 +65,9 @@ class Stynker:
         if not show_route:
             self.turtle.penup()
         self.turtle.setposition(*initial_position)
-        self.velocity_vector = (0, 0)
         self.vector_magnitude = 2.0
+        self.velocity_vector = None
+        self.update_velocity_vector((random(), random()))
         # Radius of the Stynker
         self.radius = 10
 
@@ -76,10 +77,10 @@ class Stynker:
         # Make graph
         for i in range(self.n_nodes):
             # Mark first `n_input` nodes as input
-            if i in self.input_nodes:
+            if i in range(n_input):
                 node_type = "input"
             # Mark following `n_output` nodes as output
-            elif i in self.output_nodes:
+            elif i in range(n_input, n_input + n_output):
                 node_type = "output"
                 self.update_kick_dictionary(i)
             # Mark the rest as regular
@@ -197,6 +198,20 @@ class Stynker:
         self.turtle.setx(x)
         self.turtle.sety(y)
 
+    def update_velocity_vector(self, new_vector: Tuple[float, float]) -> None:
+        """
+        Updates the velocity vector. Uses the direction from new_vector,
+        but keeps the magnitude as specified in `self.vector_magnitude`
+        Args:
+            new_vector: vector with the desired direction
+        """
+        a, b = new_vector
+        norm = math.sqrt(a ** 2 + b ** 2)
+        self.velocity_vector = (
+            round(self.vector_magnitude * a / norm, 6),
+            round(self.vector_magnitude * b / norm, 6)
+        )
+
     def load_nodes(self, **kwargs) -> None:
         """Run logic for loading nodes"""
         for node in self.get_nodes():
@@ -219,19 +234,12 @@ class Stynker:
         """
         current_vector = self.velocity_vector
         kick_vector = self.kick_dictionary[n]
-        new_vector_raw = (
+        new_vector = (
             current_vector[0] + kick_vector[0],
             current_vector[1] + kick_vector[1]
         )
-        # Normalize vector
-        a, b = new_vector_raw
-        norm = (a ** 2 + b ** 2) ** 0.5
-        new_vector = (
-            self.vector_magnitude * a / norm,
-            self.vector_magnitude * b / norm
-        )
         # Updates velocity vector
-        self.velocity_vector = new_vector
+        self.update_velocity_vector(new_vector)
 
     def update_kick_dictionary(self, i: int) -> None:
         """
@@ -243,7 +251,7 @@ class Stynker:
         Args:
             i: node to update
         """
-        j = self.output_nodes.index(i)
+        j = i - self.n_input
         # Calculate angle. It basically splits the circle
         # in `self.n_output` equal arcs, and get the angle
         # from the center of the arc with the x-axis
@@ -301,7 +309,6 @@ class Stynker:
             nodes: Iterable with instances of `Node`
         """
         for node in nodes:
-            print(f"Remaking node: {node}")
             # Remake node's attributes
             node.remake()
             # Remake edges
