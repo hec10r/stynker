@@ -19,6 +19,7 @@ class Stynker:
         n_input: int,
         n_output: int,
         color: str,
+        vector_magnitude: float = 2.0,
         initial_position: Tuple[int, int] = (0, 0),
         show_route: bool = False,
         random_sleep: bool = False,
@@ -65,7 +66,7 @@ class Stynker:
         if not show_route:
             self.turtle.penup()
         self.turtle.setposition(*initial_position)
-        self.vector_magnitude = 2.0
+        self.vector_magnitude = vector_magnitude
         self.velocity_vector = None
         self.update_velocity_vector((random(), random()))
         # Radius of the Stynker

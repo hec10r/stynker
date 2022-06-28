@@ -49,6 +49,7 @@ if __name__ == "__main__":
         n_input=8,
         n_output=8,
         color="blue",
+        vector_magnitude=2.0,
         initial_position=(0, 0),
         show_route=True,
         random_sleep=False,
@@ -61,6 +62,7 @@ if __name__ == "__main__":
         n_input=8,
         n_output=8,
         color="purple",
+        vector_magnitude=2.0,
         initial_position=(0, 0),
         show_route=True,
         random_sleep=False,
@@ -83,10 +85,6 @@ if __name__ == "__main__":
     stynker_1.period = "wake"
     stynker_2.period = "wake"
 
-    # Define vector magnitude for the Stynkers
-    stynker_1.vector_magnitude = 2.0
-    stynker_2.vector_magnitude = 2.0
-
     # Run wake cycles
     for _ in range(100000):
         stynker_1.run_cycle()
@@ -103,6 +101,21 @@ if __name__ == "__main__":
         # Update vector
         stynker_1.update_velocity_vector(info_1["final_velocity_vector"])
         stynker_2.update_velocity_vector(info_2["final_velocity_vector"])
+
+        from copy import deepcopy
+        # Win / Lose logic
+        if info_1["won"]:
+            stynker_2 = deepcopy(stynker_1)
+            stynker_2.update_position(0, 0)
+        elif info_1["lost"]:
+            stynker_1 = deepcopy(stynker_2)
+            stynker_1.update_position(0, 0)
+        elif info_2["won"]:
+            stynker_1 = deepcopy(stynker_2)
+            stynker_1.update_position(0, 0)
+        elif info_2["lost"]:
+            stynker_2 = deepcopy(stynker_1)
+            stynker_2.update_position(0, 0)
 
         environment.window.update()
 
