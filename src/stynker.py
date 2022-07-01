@@ -65,7 +65,8 @@ class Stynker:
         self.turtle.shape("circle")
         if not show_route:
             self.turtle.penup()
-        self.turtle.setposition(*initial_position)
+        self.initial_position = initial_position
+        self.turtle.setposition(*self.initial_position)
         self.vector_magnitude = vector_magnitude
         self.velocity_vector = None
         self.update_velocity_vector((random(), random()))
@@ -377,6 +378,14 @@ class Stynker:
                 weight=randint(*edge_constants["weight_range"]),
                 length=randint(*edge_constants["length_range"]),
             )
+
+    def reset_position(self):
+        """
+        Move back the Stynker to the initial position without drawing
+        """
+        self.turtle.penup()
+        self.turtle.setposition(self.initial_position)
+        self.turtle.pendown()
 
     def __repr__(self) -> str:
         """
