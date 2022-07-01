@@ -42,28 +42,12 @@ class Stynker:
         """
         self.__dict__.update(kwargs)
 
-        # Mind of the Stynker
-        self.n_nodes = n_nodes
-        self.period = period
-        self.n_remakes = n_remakes
-        self.random_sleep = random_sleep
-        self.current_cycle: int = 0
-        self.graph: defaultdict = defaultdict(set)  # Node -> {set of Edges}
-        self.reverse_graph: defaultdict = defaultdict(set)  # Node -> {set of Nodes}
-        self.nodes_dict = dict()
-
-        # Body of the Stynker
-        self.n_input = min(n_input, self.n_nodes)
-        self.n_output = len(range(n_input, min(n_input + n_output, self.n_nodes)))
-        self.input_nodes = list()
-        self.output_nodes = list()
-        self.kick_dictionary = dict()
-
-        # Create turtle object
+        # Create "body" of the Stynker: turtle object
         self.turtle = turtle.Turtle()
         self.turtle.color(color)
         self.turtle.shape("circle")
-        if not show_route:
+        self.show_route = show_route
+        if not self.show_route:
             self.turtle.penup()
         self.initial_position = initial_position
         self.turtle.setposition(*self.initial_position)
@@ -73,8 +57,32 @@ class Stynker:
         # Radius of the Stynker
         self.radius = 10
 
+        # Create "mind" of the Stynker
+        self.n_nodes = n_nodes
+        self.period = period
+        self.n_remakes = n_remakes
+        self.random_sleep = random_sleep
+        self.current_cycle: int = 0
+        self.graph: defaultdict = defaultdict(set)  # Node -> {set of Edges}
+        self.reverse_graph: defaultdict = defaultdict(set)  # Node -> {set of Nodes}
+        self.nodes_dict = dict()
+
+        # Input/output logic
+        self.n_input = n_input
+        self.n_output = n_output
+        self.input_nodes = list()
+        self.output_nodes = list()
+        self.kick_dictionary = dict()
+
+        # When the n_nodes is equal to -1, no graph is created
         if self.n_nodes == -1:
             return
+
+        if (self.n_input + self.n_output) > self.n_nodes:
+            raise ValueError(
+                "The total number of nodes must be greater or equal"
+                "than the sum of the input and output nodes"
+            )
 
         # Make graph
         for i in range(self.n_nodes):
@@ -283,7 +291,7 @@ class Stynker:
 
     def get_nodes(self) -> Iterable[Node]:
         """Return the nodes of the graph"""
-        return sample(self.graph.keys(), self.n_nodes)
+        return sample(self.graph.keys(), len(self.graph))
 
     def get_random_node(self, current_name: int) -> Node:
         """
@@ -291,7 +299,7 @@ class Stynker:
         Args:
             current_name: integer that represents a node in the graph
         """
-        options = [i for i in range(self.n_nodes) if i != current_name]
+        options = [i.name for i in self.graph.keys() if i.name != current_name]
         random_number = choice(options)
         return self.nodes_dict[random_number]
 
@@ -385,7 +393,8 @@ class Stynker:
         """
         self.turtle.penup()
         self.turtle.setposition(self.initial_position)
-        self.turtle.pendown()
+        if self.show_route:
+            self.turtle.pendown()
 
     def __repr__(self) -> str:
         """
