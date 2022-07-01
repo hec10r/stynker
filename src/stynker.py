@@ -2,6 +2,7 @@ import json
 import math
 import turtle
 from collections import defaultdict
+from copy import deepcopy
 from random import choice, randint, random, sample
 from .node import Node
 from .edge import Edge
@@ -395,6 +396,21 @@ class Stynker:
         self.turtle.setposition(self.initial_position)
         if self.show_route:
             self.turtle.pendown()
+
+    def clone_from(self, stk, **kwargs) -> None:
+        """
+        Redesign the current Stynker based on other
+        Args:
+            stk: Stynker to clone from
+            **kwargs: Additional key word arguments
+        """
+        self.reset_position()
+        self.n_nodes = stk.n_nodes
+        self.graph = deepcopy(stk.graph)
+        self.reverse_graph = deepcopy(stk.reverse_graph)
+        self.nodes_dict = deepcopy(stk.nodes_dict)
+        self.kick_dictionary = deepcopy(stk.kick_dictionary)
+        self.__dict__.update(kwargs)
 
     def __repr__(self) -> str:
         """
