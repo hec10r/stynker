@@ -46,6 +46,7 @@ def run_wake_cycle(
     stk_1.period = "wake"
     stk_2.period = "wake"
     for n in range(n_cycles):
+        num_run_cycles += 1
         # Updates the 'mind'
         stk_1.run_cycle()
         stk_2.run_cycle()
@@ -100,7 +101,7 @@ def run_wake_cycle(
         if (n + 1) % rendering_rate == 0:
             environment.window.update()
 
-        if (n + 1) % results_cycles == 0:
+        if num_run_cycles % results_cycles == 0:
             try:
                 ratio = cnt_win / cnt_lose
             except ZeroDivisionError:
@@ -108,7 +109,7 @@ def run_wake_cycle(
             # Restart counter after `results_cycles`
             cnt_win = 0
             cnt_lose = 0
-            results[n + 1] = (cnt_win, cnt_lose, ratio)
+            results[num_run_cycles] = (cnt_win, cnt_lose, ratio)
             print(results)
 
     return stk_1, stk_2
