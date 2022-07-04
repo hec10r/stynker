@@ -13,7 +13,7 @@ results = dict()
 cycles = [
     ("dream", 100),
     ("sleep", 1),
-    ("wake", 10000),
+    ("wake", 500000),
 ]
 
 
@@ -69,18 +69,26 @@ def run_wake_cycle(
             cnt_win += 1
             stk_1.reset_position()
             stk_2.clone_from(stk_1)
+            stk_1.reset_vector()
+            stk_2.reset_vector()
         elif info_1["lost"]:
             cnt_lose += 1
             stk_2.reset_position()
             stk_1.clone_from(stk_2)
+            stk_1.reset_vector()
+            stk_2.reset_vector()
         elif info_2["won"]:
             cnt_win += 1
             stk_2.reset_position()
             stk_1.clone_from(stk_2)
+            stk_1.reset_vector()
+            stk_2.reset_vector()
         elif info_2["lost"]:
             cnt_lose += 1
             stk_1.reset_position()
             stk_2.clone_from(stk_1)
+            stk_1.reset_vector()
+            stk_2.reset_vector()
 
         if (n + 1) % rendering_rate == 0:
             environment.window.update()
