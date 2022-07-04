@@ -1,53 +1,55 @@
-import math
+import json
 import turtle
-from copy import deepcopy
 from typing import Tuple
-
+from utils import get_environment_inputs
 from src import Stynker
 from src import Environment
 
+cnt_win = 0
+cnt_lose = 0
+num_run_cycles = 0
+results = dict()
 
-def clone_stynker(stk: Stynker, color: str, show_route: bool = False):
-    required_parameters = [
-        "n_input",
-        "n_output",
-        "n_remakes",
-        "vector_magnitude",
-        "period",
-        "velocity_vector",
-    ]
-    kwargs = {
-        key: val
-        for key, val in stk.__dict__.items()
-        if key in required_parameters
-    }
-    kwargs["n_nodes"] = -1
-    kwargs["initial_position"] = stk.initial_position
-    kwargs["show_route"] = show_route
-    kwargs["color"] = color
-
-    new_stynker = Stynker(**kwargs)
-    new_stynker.graph = deepcopy(stk.graph)
-    new_stynker.kick_dictionary = deepcopy(stk.kick_dictionary)
-    new_stynker.reverse_graph = deepcopy(stk.reverse_graph)
-    new_stynker.nodes_dict = deepcopy(stk.nodes_dict)
-    return new_stynker
+cycles = [
+    ("dream", 100),
+    ("sleep", 1),
+    ("wake", 10000),
+]
 
 
 def run_wake_cycle(
         stk_1: Stynker,
         stk_2: Stynker,
-        n_cycle: int,
+        n_cycles: int,
         rendering_rate: int = 1,
+        results_cycles: int = 1000,
 ) -> Tuple[Stynker, Stynker]:
+    """
+    Run the wake cycle, and updates the Stynkers if required.
+
+    Store the information about the
+    Args:
+        stk_1: Stynker # 1
+        stk_2: Stynker # 2
+        n_cycles: number of cycles to run
+        rendering_rate: how often the visuals are rendered
+        results_cycles: how often to store te results
+    Returns:
+        Tuple of the two Stynkers updated
+    """
+    global cnt_win
+    global cnt_lose
+    global num_run_cycles
+    global results
+
     stk_1.period = "wake"
     stk_2.period = "wake"
-    for n in range(n_cycle):
-        # TODO: Change logic keep the win/loss counter
-        # TODO: input logic
+    for n in range(n_cycles):
+        # Updates the 'mind'
         stk_1.run_cycle()
         stk_2.run_cycle()
 
+        # Updates the 'body'
         # Check if the stynker bounces and calculate new velocity vector
         info_1 = environment.get_interaction_information(stk_1)
         info_2 = environment.get_interaction_information(stk_2)
@@ -61,57 +63,39 @@ def run_wake_cycle(
         stk_2.update_velocity_vector(info_2["final_velocity_vector"])
 
         # Win / Lose logic
+        # There is a tiny possibility where two of these events happen at the same
+        # time. Since this is once in a million, we are ignoring it
         if info_1["won"]:
+            cnt_win += 1
             stk_1.reset_position()
-            stk_2 = clone_stynker(stk_1, "purple")
+            stk_2.clone_from(stk_1)
         elif info_1["lost"]:
+            cnt_lose += 1
             stk_2.reset_position()
-            stk_1 = clone_stynker(stk_2, "blue")
+            stk_1.clone_from(stk_2)
         elif info_2["won"]:
+            cnt_win += 1
             stk_2.reset_position()
-            stk_1 = clone_stynker(stk_2, "blue")
+            stk_1.clone_from(stk_2)
         elif info_2["lost"]:
+            cnt_lose += 1
             stk_1.reset_position()
-            stk_2 = clone_stynker(stk_1, "purple")
+            stk_2.clone_from(stk_1)
 
-        if n % rendering_rate == 0:
+        if (n + 1) % rendering_rate == 0:
             environment.window.update()
+
+        if (n + 1) % results_cycles == 0:
+            results[n + 1] = (cnt_win, cnt_lose)
+            print(results)
 
     return stk_1, stk_2
 
 
 if __name__ == "__main__":
-    maze_environment = {
-        "border_coordinates": [
-            (360, -360),
-            (360, 360),
-            (-120, 360),
-            (-120, -180),
-            (-120, 360),
-            (-360, 360),
-            (-360, -360),
-            (120, -360),
-            (120, 180),
-            (120, -360),
-            (360, -360),
-        ],
-        "winning_segment": 5,
-        "losing_segment": 10,
-    }
-    hexagonal_radius = 360
-    hexagonal_environment = {
-        "border_coordinates": [
-            (
-                math.cos(math.radians(alpha)) * hexagonal_radius,
-                math.sin(math.radians(alpha)) * hexagonal_radius
-            )
-            for alpha in range(0, 420, 60)
-        ],
-        "winning_segment": 2,
-        "losing_segment": 5,
-    }
+    environment_inputs = get_environment_inputs(env_name="simple_maze")
     # Initialize environment
-    environment = Environment(**maze_environment)
+    environment = Environment(**environment_inputs)
     environment.draw_borders()
 
     # Input parameters
@@ -148,21 +132,22 @@ if __name__ == "__main__":
         random_sleep=False,
     )
 
-    cycles = [
-        ("dream", 100),
-        ("sleep", 1),
-        ("wake", 100000),
-    ]
-
     for period, n_cycles in cycles:
         stynker_1.period = period
         stynker_2.period = period
 
         if period == "wake":
-            stynker_1, stynker_2 = run_wake_cycle(stynker_1, stynker_2, n_cycles)
+            stynker_1, stynker_2 = run_wake_cycle(
+                stk_1=stynker_1,
+                stk_2=stynker_2,
+                n_cycles=n_cycles,
+                rendering_rate=100,
+                results_cycles=10000,
+            )
+        else:
+            for _ in range(n_cycles):
+                stynker_1.run_cycle()
+                stynker_2.run_cycle()
 
-        for _ in range(n_cycles):
-            stynker_1.run_cycle()
-            stynker_2.run_cycle()
-
-    turtle.done()
+    with open("results.json", "w") as f:
+        json.dump(results, f)
