@@ -221,6 +221,7 @@ class Stynker:
         norm = math.sqrt(a ** 2 + b ** 2)
         if norm == 0:
             self.velocity_vector = (0, 0)
+            return
         self.velocity_vector = (
             round(self.vector_magnitude * a / norm, 6),
             round(self.vector_magnitude * b / norm, 6)
