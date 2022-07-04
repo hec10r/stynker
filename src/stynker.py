@@ -53,8 +53,7 @@ class Stynker:
         self.initial_position = initial_position
         self.turtle.setposition(*self.initial_position)
         self.vector_magnitude = vector_magnitude
-        self.velocity_vector = None
-        self.update_velocity_vector((random(), random()))
+        self.velocity_vector = (0, 0)
         # Radius of the Stynker
         self.radius = 10
 
@@ -400,6 +399,12 @@ class Stynker:
         self.turtle.setposition(self.initial_position)
         if self.show_route:
             self.turtle.pendown()
+
+    def reset_vector(self):
+        """
+        Change velocity vector to (0, 0)
+        """
+        self.update_velocity_vector((0, 0))
 
     def clone_from(self, stk, **kwargs) -> None:
         """
