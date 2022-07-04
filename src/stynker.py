@@ -73,6 +73,7 @@ class Stynker:
         self.input_nodes = list()
         self.output_nodes = list()
         self.kick_dictionary = dict()
+        self.input_points = dict()
 
         # When the n_nodes is equal to -1, no graph is created
         if self.n_nodes == -1:
@@ -84,11 +85,34 @@ class Stynker:
                 "than the sum of the input and output nodes"
             )
 
+        if self.n_input % 2:
+            raise ValueError(
+                "The number of input nodes must be even, since currently"
+                "they are defined as two rings"
+            )
+
         # Make graph
         for i in range(self.n_nodes):
             # Mark first `n_input` nodes as input
             if i in range(n_input):
                 node_type = "input"
+                # The input points are defined as two rings.
+                # One defined by the radius and the other by twice
+                # the radius. The first `self.n_input / 2` nodes are
+                # in the inner ring, and the others in the outer
+
+                # If 1: inner, if 2: outer
+                in_out = (i // (self.n_input / 2) + 1)
+
+                # Get the angle
+                alpha = 2 * math.pi * i * 2 / self.n_input
+
+                # Get point coordinates
+                input_point = (
+                    round(in_out * self.radius * math.cos(alpha), 5),
+                    round(in_out * self.radius * math.sin(alpha), 5)
+                )
+                self.input_points[i] = input_point
             # Mark following `n_output` nodes as output
             elif i in range(n_input, n_input + n_output):
                 node_type = "output"
