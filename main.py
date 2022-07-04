@@ -101,7 +101,11 @@ def run_wake_cycle(
             environment.window.update()
 
         if (n + 1) % results_cycles == 0:
-            results[n + 1] = (cnt_win, cnt_lose)
+            try:
+                ratio = cnt_win / cnt_lose
+            except ZeroDivisionError:
+                ratio = -1
+            results[n + 1] = (cnt_win, cnt_lose, ratio)
             print(results)
 
     return stk_1, stk_2
