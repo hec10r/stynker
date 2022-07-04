@@ -212,12 +212,16 @@ class Stynker:
     def update_velocity_vector(self, new_vector: Tuple[float, float]) -> None:
         """
         Updates the velocity vector. Uses the direction from new_vector,
-        but keeps the magnitude as specified in `self.vector_magnitude`
+        but keeps the magnitude* as specified in `self.vector_magnitude`.
+        *Except when `new_vector` is (0, 0), then the velocity vector
+        becomes (0, 0)
         Args:
             new_vector: vector with the desired direction
         """
         a, b = new_vector
         norm = math.sqrt(a ** 2 + b ** 2)
+        if norm == 0:
+            self.velocity_vector = (0, 0)
         self.velocity_vector = (
             round(self.vector_magnitude * a / norm, 6),
             round(self.vector_magnitude * b / norm, 6)
