@@ -1,4 +1,5 @@
 import json
+import time
 import turtle
 from typing import Tuple
 from utils import get_environment_inputs
@@ -61,6 +62,12 @@ def run_wake_cycle(
         # Update vector
         stk_1.update_velocity_vector(info_1["final_velocity_vector"])
         stk_2.update_velocity_vector(info_2["final_velocity_vector"])
+
+        # Handle input logic
+        if closest_input_node := info_1["closest_input_node"] is not None:
+            stk_1.activate_node(closest_input_node)
+        if closest_input_node := info_2["closest_input_node"] is not None:
+            stk_2.activate_node(closest_input_node)
 
         # Win / Lose logic
         # There is a tiny possibility where two of these events happen at the same
@@ -149,7 +156,7 @@ if __name__ == "__main__":
                 stk_1=stynker_1,
                 stk_2=stynker_2,
                 n_cycles=n_cycles,
-                rendering_rate=100,
+                rendering_rate=1000,
                 results_cycles=10000,
             )
         else:
@@ -157,5 +164,5 @@ if __name__ == "__main__":
                 stynker_1.run_cycle()
                 stynker_2.run_cycle()
 
-    with open("results.json", "w") as f:
+    with open(f"results_{int(time.time())}.json", "w") as f:
         json.dump(results, f)
