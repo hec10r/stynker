@@ -23,7 +23,7 @@ def run_wake_cycle(
         stk_2: Stynker,
         n_cycles: int,
         rendering_rate: int = 1,
-        results_cycles: int = 1000,
+        results_cycles: int = 100000,
 ) -> Tuple[Stynker, Stynker]:
     """
     Run the wake cycle, and updates the Stynkers if required.
@@ -105,6 +105,9 @@ def run_wake_cycle(
                 ratio = cnt_win / cnt_lose
             except ZeroDivisionError:
                 ratio = -1
+            # Restart counter after `results_cycles`
+            cnt_win = 0
+            cnt_lose = 0
             results[n + 1] = (cnt_win, cnt_lose, ratio)
             print(results)
 
