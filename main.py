@@ -106,10 +106,10 @@ def run_wake_cycle(
                 ratio = cnt_win / cnt_lose
             except ZeroDivisionError:
                 ratio = -1
+            results[num_run_cycles] = (cnt_win, cnt_lose, ratio)
             # Restart counter after `results_cycles`
             cnt_win = 0
             cnt_lose = 0
-            results[num_run_cycles] = (cnt_win, cnt_lose, ratio)
             print(results)
 
     return stk_1, stk_2
