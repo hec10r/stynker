@@ -64,9 +64,9 @@ def run_wake_cycle(
         stk_2.update_velocity_vector(info_2["final_velocity_vector"])
 
         # Handle input logic
-        if closest_input_node := info_1["closest_input_node"] is not None:
+        if (closest_input_node := info_1["closest_input_node"]) is not None:
             stk_1.activate_node(closest_input_node)
-        if closest_input_node := info_2["closest_input_node"] is not None:
+        if (closest_input_node := info_2["closest_input_node"]) is not None:
             stk_2.activate_node(closest_input_node)
 
         # Win / Lose logic
