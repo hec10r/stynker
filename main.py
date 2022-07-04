@@ -171,5 +171,6 @@ if __name__ == "__main__":
                 stynker_1.run_cycle()
                 stynker_2.run_cycle()
 
+    # Saving the results with the current timestamp
     with open(f"results_{int(time.time())}.json", "w") as f:
         json.dump(results, f)
