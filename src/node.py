@@ -77,8 +77,9 @@ class Node:
         self.endo = randint(*node_constants["endo_range"])
 
     def activate(self) -> None:
-        """Mark node as active if it is input or output
-        """
+        """Mark node as active if it is input or output"""
+        if self.type not in ("input", "output"):
+            raise ValueError("Attempting to activate a 'regular' node")
         self.is_active = True
 
     def deactivate(self) -> None:
