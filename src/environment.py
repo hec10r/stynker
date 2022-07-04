@@ -105,23 +105,43 @@ class Environment:
         touch_border = False
         won = False
         lost = False
-        # Intersection point with the env. border
-        intersection_point = None
+        closest_input_node = None
         for i, (a, b, c) in enumerate(self.border_parameters):
             p1 = self.border_coordinates[i]
             p2 = self.border_coordinates[i+1]
             current_distance = self.distance_to_segment(x0, y0, p1, p2)
             next_distance = self.distance_to_segment(x1, y1, p1, p2)
+
+            # Should the Stynker bounce?
             if next_distance <= stk.radius and next_distance < current_distance:
+                # Get new velocity vector
                 new_velocity_vector = self.calculate_velocity_vector(velocity_vector, a, b)
+                # Keeps the same position. Ideally, this will be made more robust
                 new_position = (x0, y0)
                 touch_border = True
                 if i == self.winning_segment - 1:
                     won = True
                 if i == self.losing_segment - 1:
                     lost = True
-                continue
 
+                # Get the closest **inner** input node to the wall
+                min_distance = 1e8
+                for node_name, point in stk.input_points.items():
+                    # Whether the node is in the inner ring
+                    is_inner = node_name < stk.n_input / 2
+                    distance = self.distance_to_segment(point[0], point[1], p1, p2)
+                    if is_inner and distance < min_distance:
+                        closest_input_node = node_name
+                        min_distance = distance
+                continue
+            elif next_distance <= stk.radius * 2:
+                # Get the closest **outer** input node to the wall
+                min_distance = 1e8
+                for node_name, point in stk.input_points.items():
+                    distance = self.distance_to_segment(point[0], point[1], p1, p2)
+                    if distance < min_distance:
+                        closest_input_node = node_name
+                        min_distance = distance
         result = {
             "previous_position": (x0, y0),
             "new_position": new_position,
@@ -130,7 +150,7 @@ class Environment:
             "touch_border": touch_border,
             "won": won,
             "lost": lost,
-            "intersection_point": intersection_point,
+            "closest_input_node": closest_input_node,
         }
         return result
 
