@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # Program output
-results.json
+*.json
 
 # PyCharm stuff
 .idea/
