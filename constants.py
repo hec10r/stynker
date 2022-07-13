@@ -1,5 +1,5 @@
 edge_constants = {
-    "n_edges_range": (10, 30),
+    "n_edges_range": (1, 3),
     "weight_range": (1, 3),
     "length_range": (1, 3),
 }
