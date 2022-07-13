@@ -193,7 +193,7 @@ class Stynker:
             nodes_to_remake = sample(list(self.get_nodes()), self.n_remakes)
         else:
             # Sort list of nodes by damage
-            damage_order = lambda node: node.damage
+            damage_order = lambda node: (node.damage, node.name)
             ordered_nodes = sorted(
                 [node for node in self.get_nodes()],
                 key=damage_order
@@ -205,6 +205,10 @@ class Stynker:
         self.remake(nodes_to_remake)
 
         # Restart damage to 0
+        self.reset_damage()
+
+    def reset_damage(self) -> None:
+        """Set the damage from all nodes to 0"""
         for node in self.get_nodes():
             node.damage = 0
 
@@ -320,7 +324,7 @@ class Stynker:
 
     def get_nodes(self) -> Iterable[Node]:
         """Return the nodes of the graph"""
-        return sample(self.graph.keys(), len(self.graph))
+        return sorted(self.graph.keys(), key=lambda node: node.name)
 
     def get_random_node(self, current_name: int) -> Node:
         """
@@ -456,6 +460,8 @@ class Stynker:
         repr_ = {
             "cycle": self.current_cycle,
             "period": self.period,
+            "position": self.turtle.position(),
+            "velocity": self.velocity_vector,
         }
         nodes_info = [
             [
