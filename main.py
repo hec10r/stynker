@@ -164,7 +164,7 @@ if __name__ == "__main__":
                 stk_1=stynker_1,
                 stk_2=stynker_2,
                 n_cycles=n_cycles,
-                rendering_rate=1000,
+                rendering_rate=1,
                 results_cycles=10000,
             )
         else:
