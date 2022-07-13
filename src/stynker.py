@@ -324,7 +324,7 @@ class Stynker:
 
     def get_nodes(self) -> Iterable[Node]:
         """Return the nodes of the graph"""
-        return sorted(self.graph.keys(), key=lambda node: node.name)
+        return self.graph.keys()
 
     def get_random_node(self, current_name: int) -> Node:
         """
