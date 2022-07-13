@@ -148,6 +148,8 @@ class Stynker:
 
     def _run_wake_cycle(self, **kwargs) -> None:
         """Run the wake cycle"""
+        x_vector, y_vector = self.velocity_vector
+
         # Load nodes
         self.load_nodes()
 
@@ -157,15 +159,15 @@ class Stynker:
             if node.is_full():
                 # Mark output node as active if it spills
                 if node.is_output:
-                    node.activate()
+                    kick_vector = self.kick_dictionary[node.name]
+                    x_vector += kick_vector[0]
+                    y_vector += kick_vector[1]
                 # Spill full nodes
                 node.spill()
                 for edge in self.graph[node]:
                     # Load edges with trickles
                     edge.load()
-            if node.is_output and node.is_active:
-                self.kick(node.name)
-                node.deactivate()
+        self.velocity_vector = (x_vector, y_vector)
 
     def _run_dream_cycle(self, **kwargs) -> None:
         """Run the dream cycle"""
@@ -176,16 +178,11 @@ class Stynker:
         for node in self.get_nodes():
             # Check if the node is full
             if node.is_full():
-                # Mark output node as active if it spills
-                if node.is_output:
-                    node.activate()
                 # Spill full nodes
                 node.spill()
                 for edge in self.graph[node]:
                     # Load edges with trickles
                     edge.load()
-            elif node.is_output:
-                node.deactivate()
 
     def _run_sleep_cycle(self, **kwargs) -> None:
         """Run the sleep cycle"""
