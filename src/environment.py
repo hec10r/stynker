@@ -10,7 +10,6 @@ class Environment:
         border_coordinates: List[Tuple[float, float]],
         winning_segment: int,
         losing_segment: int,
-        **kwargs
     ):
         # Initialize window
         width = 960

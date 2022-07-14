@@ -132,7 +132,7 @@ class StynkerMind:
         random_number = choice(options)
         return self.nodes_dict[random_number]
 
-    def load_nodes(self, **kwargs) -> None:
+    def load_nodes(self) -> None:
         """Run logic for loading nodes"""
         for node in self.get_nodes():
             # Load based on `endo`
@@ -549,9 +549,6 @@ class Stynker(StynkerMind):
         Notice that the Stynker is represented by an instance
         of a turtle, that is a point, but in this implementation
         we are treating it as a circle
-
-        Args:
-            stk: Stynker instance
 
         Returns:
             A dictionary with the information of the Stynker

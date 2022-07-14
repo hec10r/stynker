@@ -1,7 +1,6 @@
 import json
 import time
 import turtle
-from typing import Tuple
 from utils import get_environment_inputs
 from src import Stynker
 from src import Environment
