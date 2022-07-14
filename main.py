@@ -6,8 +6,14 @@ from utils import get_environment_inputs
 from src import Stynker
 from src import Environment
 
+# Win / Lose logic
 cnt_win = 0
 cnt_lose = 0
+
+# Rendering and results logic
+rendering_rate = 1
+results_cycles = 100000
+
 num_run_cycles = 0
 results = dict()
 
@@ -16,104 +22,6 @@ cycles = [
     ("sleep", 1),
     ("wake", 500000),
 ]
-
-
-def run_wake_cycle(
-        stk_1: Stynker,
-        stk_2: Stynker,
-        n_cycles: int,
-        rendering_rate: int = 1,
-        results_cycles: int = 100000,
-) -> Tuple[Stynker, Stynker]:
-    """
-    Run the wake cycle, and updates the Stynkers if required.
-
-    Store the information about the
-    Args:
-        stk_1: Stynker # 1
-        stk_2: Stynker # 2
-        n_cycles: number of cycles to run
-        rendering_rate: how often the visuals are rendered
-        results_cycles: how often to store te results
-    Returns:
-        Tuple of the two Stynkers updated
-    """
-    global cnt_win
-    global cnt_lose
-    global num_run_cycles
-    global results
-
-    stk_1.period = "wake"
-    stk_2.period = "wake"
-    for n in range(n_cycles):
-        num_run_cycles += 1
-        # Updates the 'mind'
-        stk_1.run_cycle()
-        stk_2.run_cycle()
-
-        # Updates the 'body'
-        # Check if the stynker bounces and calculate new velocity vector
-        info_1 = environment.get_interaction_information(stk_1)
-        info_2 = environment.get_interaction_information(stk_2)
-
-        # Update position
-        stk_1.update_position(*info_1["new_position"])
-        stk_2.update_position(*info_2["new_position"])
-
-        # Update vector
-        stk_1.update_velocity_vector(info_1["final_velocity_vector"])
-        stk_2.update_velocity_vector(info_2["final_velocity_vector"])
-
-        # Handle input logic
-        if (closest_input_node := info_1["closest_input_node"]) is not None:
-            stk_1.activate_node(closest_input_node)
-        if (closest_input_node := info_2["closest_input_node"]) is not None:
-            stk_2.activate_node(closest_input_node)
-
-        # Win / Lose logic
-        # There is a tiny possibility where two of these events happen at the same
-        # time. Since this is once in a million, we are ignoring it
-        if info_1["won"]:
-            cnt_win += 1
-            stk_1.reset_position()
-            stk_2.clone_from(stk_1)
-            stk_1.reset_vector()
-            stk_2.reset_vector()
-        elif info_1["lost"]:
-            cnt_lose += 1
-            stk_2.reset_position()
-            stk_1.clone_from(stk_2)
-            stk_1.reset_vector()
-            stk_2.reset_vector()
-        elif info_2["won"]:
-            cnt_win += 1
-            stk_2.reset_position()
-            stk_1.clone_from(stk_2)
-            stk_1.reset_vector()
-            stk_2.reset_vector()
-        elif info_2["lost"]:
-            cnt_lose += 1
-            stk_1.reset_position()
-            stk_2.clone_from(stk_1)
-            stk_1.reset_vector()
-            stk_2.reset_vector()
-
-        if (n + 1) % rendering_rate == 0:
-            environment.window.update()
-
-        if num_run_cycles % results_cycles == 0:
-            try:
-                ratio = cnt_win / cnt_lose
-            except ZeroDivisionError:
-                ratio = -1
-            results[num_run_cycles] = (cnt_win, cnt_lose, ratio)
-            # Restart counter after `results_cycles`
-            cnt_win = 0
-            cnt_lose = 0
-            print(results)
-
-    return stk_1, stk_2
-
 
 if __name__ == "__main__":
     environment_inputs = get_environment_inputs(env_name="simple_maze")
@@ -127,46 +35,88 @@ if __name__ == "__main__":
     # Other parameters
     show_route = False
     vector_magnitude = 2.0
+    n_remakes = 10
+    n_input = 8
+    n_output = 8
+    initial_position = (0, 0)
+    random_sleep = True
 
     # Initialize Stynkers
     stynker_1 = Stynker(
         n_nodes=n_nodes,
-        period="dream",
-        n_remakes=10,
-        n_input=8,
-        n_output=8,
+        n_remakes=n_remakes,
+        n_input=n_input,
+        n_output=n_output,
         color="blue",
-        vector_magnitude=vector_magnitude,
-        initial_position=(0, 0),
+        environment=environment,
+        initial_position=initial_position,
         show_route=show_route,
-        random_sleep=False,
+        random_sleep=random_sleep,
     )
 
     stynker_2 = Stynker(
         n_nodes=n_nodes,
-        period="dream",
-        n_remakes=10,
-        n_input=8,
-        n_output=8,
+        n_remakes=n_remakes,
+        n_input=n_input,
+        n_output=n_output,
         color="purple",
-        vector_magnitude=vector_magnitude,
-        initial_position=(0, 0),
+        environment=environment,
+        initial_position=initial_position,
         show_route=show_route,
-        random_sleep=False,
+        random_sleep=random_sleep,
     )
 
     for period, n_cycles in cycles:
-        stynker_1.period = period
-        stynker_2.period = period
+        stynker_1.assign_period(period)
+        stynker_2.assign_period(period)
 
         if period == "wake":
-            stynker_1, stynker_2 = run_wake_cycle(
-                stk_1=stynker_1,
-                stk_2=stynker_2,
-                n_cycles=n_cycles,
-                rendering_rate=1,
-                results_cycles=10000,
-            )
+            for n in range(n_cycles):
+                num_run_cycles += 1
+                info_1 = stynker_1.run_cycle()
+                info_2 = stynker_2.run_cycle()
+
+                # Win / Lose logic
+                # There is a tiny possibility where two of these events happen at the same
+                # time. Since this is once in a million, we are ignoring it
+                if info_1["won"]:
+                    cnt_win += 1
+                    stynker_1.reset_position()
+                    stynker_2.clone_from(stynker_1)
+                    stynker_1.reset_vector()
+                    stynker_2.reset_vector()
+                elif info_1["lost"]:
+                    cnt_lose += 1
+                    stynker_2.reset_position()
+                    stynker_1.clone_from(stynker_2)
+                    stynker_1.reset_vector()
+                    stynker_2.reset_vector()
+                elif info_2["won"]:
+                    cnt_win += 1
+                    stynker_2.reset_position()
+                    stynker_1.clone_from(stynker_2)
+                    stynker_1.reset_vector()
+                    stynker_2.reset_vector()
+                elif info_2["lost"]:
+                    cnt_lose += 1
+                    stynker_1.reset_position()
+                    stynker_2.clone_from(stynker_1)
+                    stynker_1.reset_vector()
+                    stynker_2.reset_vector()
+
+                if (n + 1) % rendering_rate == 0:
+                    environment.window.update()
+
+                if num_run_cycles % results_cycles == 0:
+                    try:
+                        ratio = cnt_win / cnt_lose
+                    except ZeroDivisionError:
+                        ratio = -1
+                    results[num_run_cycles] = (cnt_win, cnt_lose, ratio)
+                    # Restart counter after `results_cycles`
+                    cnt_win = 0
+                    cnt_lose = 0
+                    print(results)
         else:
             for _ in range(n_cycles):
                 stynker_1.run_cycle()

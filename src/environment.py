@@ -1,9 +1,7 @@
 import math
 import turtle
 from collections import deque
-from typing import Any, Dict, List, Tuple
-
-from src import Stynker
+from typing import List, Tuple
 
 
 class Environment:
@@ -63,96 +61,6 @@ class Environment:
             border.pendown()
         self.window.update()
         return border
-
-    def get_interaction_information(self, stk: Stynker) -> Dict[str, Any]:
-        """
-        After a cycle, get the new information from the Stynker after
-        interacting with the environment.
-
-        Currently, returns:
-            - Previous position of the Stynker
-            - Current position of the Stynker
-            - Initial velocity vector
-            - Whether the Stynker bounces with a wall
-            - Final velocity vector
-
-        In the future, it will return:
-            - Whether the Stynker is inside the environment
-            - Whether the Stynker bounces with other Stynker
-
-        Notice that the Stynker is represented by an instance
-        of a turtle, that is a point, but in this implementation
-        we are treating it as a circle
-
-        Args:
-            stk: Stynker instance
-
-        Returns:
-            A dictionary with the information of the Stynker
-            after the interaction with the environment
-        """
-        # Current position
-        x0, y0 = stk.turtle.position()
-        # Current velocity vector
-        velocity_vector = stk.velocity_vector
-        # New position
-        x1, y1 = x0 + velocity_vector[0], y0 + velocity_vector[1]
-        new_position = (x1, y1)
-        # New velocity vector
-        new_velocity_vector = velocity_vector
-
-        # Did the ball touch the env. border?
-        touch_border = False
-        won = False
-        lost = False
-        closest_input_node = None
-        for i, (a, b, c) in enumerate(self.border_parameters):
-            p1 = self.border_coordinates[i]
-            p2 = self.border_coordinates[i+1]
-            current_distance = self.distance_to_segment(x0, y0, p1, p2)
-            next_distance = self.distance_to_segment(x1, y1, p1, p2)
-
-            # Should the Stynker bounce?
-            if next_distance <= stk.radius and next_distance < current_distance:
-                # Get new velocity vector
-                new_velocity_vector = self.calculate_velocity_vector(velocity_vector, a, b)
-                # Keeps the same position. Ideally, this will be made more robust
-                new_position = (x0, y0)
-                touch_border = True
-                if i == self.winning_segment - 1:
-                    won = True
-                if i == self.losing_segment - 1:
-                    lost = True
-
-                # Get the closest **inner** input node to the wall
-                min_distance = 1e8
-                for node_name, point in stk.input_points.items():
-                    # Whether the node is in the inner ring
-                    is_inner = node_name < stk.n_input / 2
-                    distance = self.distance_to_segment(point[0], point[1], p1, p2)
-                    if is_inner and distance < min_distance:
-                        closest_input_node = node_name
-                        min_distance = distance
-                continue
-            elif next_distance <= stk.radius * 2:
-                # Get the closest **outer** input node to the wall
-                min_distance = 1e8
-                for node_name, point in stk.input_points.items():
-                    distance = self.distance_to_segment(point[0], point[1], p1, p2)
-                    if distance < min_distance:
-                        closest_input_node = node_name
-                        min_distance = distance
-        result = {
-            "previous_position": (x0, y0),
-            "new_position": new_position,
-            "initial_velocity_vector": velocity_vector,
-            "final_velocity_vector": new_velocity_vector,
-            "touch_border": touch_border,
-            "won": won,
-            "lost": lost,
-            "closest_input_node": closest_input_node,
-        }
-        return result
 
     @staticmethod
     def calculate_velocity_vector(velocity_vector, a, b) -> Tuple[float, float]:
@@ -314,15 +222,3 @@ class Environment:
         x = x0 * (b ** 2 - a ** 2) - 2 * a * (b * y0 + c)
         y = y0 * (a ** 2 - b ** 2) - 2 * b * (a * x0 + c)
         return x / norm, y / norm
-
-    @staticmethod
-    def is_in_origin(stk: Stynker) -> bool:
-        """
-        Return whether the turtle is in (0, 0)
-        Args:
-            stk: instance of Stynker
-        Returns:
-            True if the distance between the Stynker and the origin
-            is less than its radius. False otherwise
-        """
-        return stk.turtle.distance((0, 0)) < stk.radius
