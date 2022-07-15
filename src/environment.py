@@ -1,4 +1,3 @@
-import math
 import turtle
 from collections import deque
 from typing import List, Tuple
