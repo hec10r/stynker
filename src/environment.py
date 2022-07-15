@@ -79,7 +79,7 @@ class Environment:
         """
         # Notice that (a, b) is orthogonal to the wall represented
         # by the equation ax + by + c = 0
-        norm = math.sqrt(a ** 2 + b ** 2)
+        norm = Environment.get_norm((a, b))
         normal_vector = (a / norm, b / norm)
 
         dot_product = normal_vector[0] * velocity_vector[0] + normal_vector[1] * velocity_vector[1]
@@ -166,7 +166,7 @@ class Environment:
             Distance from the point (x0, y0) to the line represented by the equation
             ax + by + c = 0
         """
-        distance = (a * x0 + b * y0 + c) / math.sqrt(a * a + b * b)
+        distance = (a * x0 + b * y0 + c) / Environment.get_norm((a, b))
         return distance
 
     @staticmethod
@@ -181,7 +181,7 @@ class Environment:
         Returns:
             Distance from point (x0, y0) to point (x1, y1)
         """
-        return math.sqrt((x0-x1)**2 + (y0-y1)**2)
+        return Environment.get_norm(((x0-x1), (y0-y1)))
 
     @staticmethod
     def projection(x0, y0, a, b, c) -> Tuple[float, float]:
@@ -198,7 +198,7 @@ class Environment:
             Point projected onto the line
         """
         d = Environment._distance_to_line(x0, y0, a, b, c)
-        norm = math.sqrt(a**2 + b**2)
+        norm = Environment.get_norm((a, b))
         x = x0 - a*d/norm
         y = y0 - b*d/norm
         return x, y
@@ -217,7 +217,19 @@ class Environment:
         Returns:
             Position of the point reflected over the line
         """
-        norm = (a ** 2 + b ** 2)
+        norm = Environment.get_norm((a, b))
         x = x0 * (b ** 2 - a ** 2) - 2 * a * (b * y0 + c)
         y = y0 * (a ** 2 - b ** 2) - 2 * b * (a * x0 + c)
         return x / norm, y / norm
+
+    @staticmethod
+    def get_norm(vector: Tuple[float, float]) -> float:
+        """
+        Get the euclidean norm of a (x, y) vector
+        Args:
+            vector: (x, y) pair
+        Returns:
+            Euclidean norm of the (x, y) vector
+        """
+        x, y = vector
+        return (x * x + y * y) ** 0.5
