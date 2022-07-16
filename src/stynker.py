@@ -16,12 +16,12 @@ class StynkerMind:
     """Object that represents the mind of the Stynker"""
 
     def __init__(
-            self,
-            n_nodes: int,
-            n_remakes: int,
-            n_input: int,
-            n_output: int,
-            random_sleep: bool = False,
+        self,
+        n_nodes: int,
+        n_remakes: int,
+        n_input: int,
+        n_output: int,
+        random_sleep: bool = False,
     ) -> None:
         """
         Graph that represent the mind of an intelligent life
@@ -313,6 +313,7 @@ class Stynker(StynkerMind):
         n_output: int,
         color: str,
         environment: Environment,
+        friction_coefficient: float = 0.95,
         radius: float = 10,
         initial_position: Tuple[int, int] = (0, 0),
         show_route: bool = False,
@@ -328,6 +329,10 @@ class Stynker(StynkerMind):
             n_input: number of node of type input
             n_output: number of node of type output
             color: color to use to represent the Stynker
+            environment: instance of Environment, who describes where the
+                maze where the Stynker moves
+            friction_coefficient: ratio to define how much velocity
+                does the Stynker lose in each cycle
             radius: radius of the representation of the Stynker
             initial_position: coordinate where the Stynker starts
             show_route: whether to show the path that the Stynker follows
@@ -354,6 +359,8 @@ class Stynker(StynkerMind):
         self.radius = radius
         # Set initial velocity vector to (0, 0)
         self.velocity_vector = (0, 0)
+        # Friction coefficient
+        self.friction_coefficient = friction_coefficient
 
         # Set environment
         self.environment = environment
@@ -373,7 +380,6 @@ class Stynker(StynkerMind):
     def _run_wake_cycle(self, **kwargs) -> Dict[str, Any]:
         """Run the wake cycle"""
         x_vector, y_vector = self.velocity_vector
-
         # Load nodes
         self.load_nodes()
 
@@ -391,15 +397,24 @@ class Stynker(StynkerMind):
                 for edge in self.graph[node]:
                     # Load edges with trickles
                     edge.load()
+        # Updates velocity vector based on the 'kicks'
         self.velocity_vector = (x_vector, y_vector)
 
+        # Get information about the interaction with the environment
         interaction_info = self.get_interaction_information()
 
-        self.update_position(*interaction_info["new_position"])
-        self.update_velocity_vector(interaction_info["final_velocity_vector"])
+        # Updates the velocity vector if the Stynker interacts with a border
+        self.velocity_vector = interaction_info["final_velocity_vector"]
 
+        # Updates the position of the Stynker
+        self.update_position(*interaction_info["new_position"])
+
+        # Activate input node
         if (closest_input_node := interaction_info["closest_input_node"]) is not None:
             self.activate_node(closest_input_node)
+
+        # Apply friction
+        self.apply_friction()
 
         return interaction_info
 
@@ -462,44 +477,6 @@ class Stynker(StynkerMind):
         self.turtle.setx(x)
         self.turtle.sety(y)
 
-    def update_velocity_vector(self, new_vector: Tuple[float, float]) -> None:
-        """
-        Updates the velocity vector. Uses the direction from new_vector,
-        but keeps the magnitude* as specified in `self.vector_magnitude`.
-        *Except when `new_vector` is (0, 0), then the velocity vector
-        becomes (0, 0)
-        Args:
-            new_vector: vector with the desired direction
-        """
-        friction_coefficient = 0.8
-        x, y = new_vector
-        norm = math.sqrt(x ** 2 + y ** 2)
-        if norm == 0:
-            self.velocity_vector = (0, 0)
-            return
-
-        self.velocity_vector = (
-            (self.velocity_vector[0] + x) * friction_coefficient,
-            (self.velocity_vector[0] + y) * friction_coefficient
-        )
-        print(self.velocity_vector)
-
-    def kick(self, n: int) -> None:
-        """
-        Change the direction of the velocity_vector based on the logic
-        described in the kick_dictionary
-        Args:
-            n: output node that was triggered
-        """
-        current_vector = self.velocity_vector
-        kick_vector = self.kick_dictionary[n]
-        new_vector = (
-            current_vector[0] + kick_vector[0],
-            current_vector[1] + kick_vector[1]
-        )
-        # Updates velocity vector
-        self.update_velocity_vector(new_vector)
-
     def reset_position(self):
         """
         Move back the Stynker to the initial position without drawing
@@ -513,7 +490,15 @@ class Stynker(StynkerMind):
         """
         Change velocity vector to (0, 0)
         """
-        self.update_velocity_vector((0, 0))
+        self.velocity_vector = (0, 0)
+
+    def apply_friction(self):
+        """Reduce the vector components by a friction coefficient"""
+        x, y = self.velocity_vector
+        self.velocity_vector = (
+            x * self.friction_coefficient,
+            y * self.friction_coefficient
+        )
 
     def clone_from(self, stk, **kwargs) -> None:
         """
@@ -605,6 +590,7 @@ class Stynker(StynkerMind):
                     if distance < min_distance:
                         closest_input_node = node_name
                         min_distance = distance
+                continue
         result = {
             "previous_position": (x0, y0),
             "new_position": new_position,
