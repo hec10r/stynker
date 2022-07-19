@@ -1,3 +1,4 @@
+from __future__ import annotations
 import json
 import math
 import turtle
@@ -8,7 +9,7 @@ from random import choice, randint, sample
 from .environment import Environment
 from .node import Node
 from .edge import Edge
-from typing import Iterable, Tuple, Dict, Any
+from typing import Iterable, Tuple, Dict, Any, Union
 from constants import edge_constants, node_constants
 
 
@@ -312,7 +313,7 @@ class Stynker(StynkerMind):
         n_input: int,
         n_output: int,
         color: str,
-        environment: Environment,
+        environment: Union[str, Environment],
         friction_coefficient: float = 0.95,
         radius: float = 10,
         initial_position: Tuple[int, int] = (0, 0),
@@ -363,7 +364,15 @@ class Stynker(StynkerMind):
         self.friction_coefficient = friction_coefficient
 
         # Set environment
-        self.environment = environment
+        if isinstance(environment, Environment):
+            self.environment = environment
+        elif isinstance(environment, str):
+            self.environment = Environment.get_environment(environment)
+        else:
+            raise TypeError(
+                f"The environment input should be an instance of Environment"
+                f"class or a string"
+            )
 
     def run_cycle(self, **kwargs) -> Any:
         """
@@ -602,6 +611,35 @@ class Stynker(StynkerMind):
             "closest_input_node": closest_input_node,
         }
         return result
+
+    def to_json(self, json_path) -> None:
+        parameters = {
+            "n_nodes": self.n_nodes,
+            "n_remakes": self.n_remakes,
+            "n_input": self.n_input,
+            "n_output": self.n_output,
+            "color": self.turtle.fillcolor(),
+            "environment": self.environment.name,
+            "show_route": self.show_route,
+            "random_sleep": self.random_sleep
+        }
+        with open(json_path, "w") as f:
+            json.dump(parameters, f)
+
+    @classmethod
+    def from_json(cls, json_path: str) -> Stynker:
+        """
+        Initialize the class from a json file
+        Args:
+            json_path: path of the json with the parameters' info
+        Returns:
+            Instance of the Stynker with the parameters from
+            the json file
+        """
+
+        with open(json_path, "r") as f:
+            parameters = json.load(f)
+        return cls(**parameters)
 
     def __repr__(self) -> str:
         """
