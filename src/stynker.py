@@ -276,7 +276,7 @@ class StynkerMind:
     def __repr__(self) -> str:
         """
         Overload the repr method to display useful information
-        about the `Stynker`
+        about the `StynkerMind`
         Returns:
             JSON representation of a `Stynker`
         """
@@ -648,10 +648,15 @@ class Stynker(StynkerMind):
         Returns:
             JSON representation of a `Stynker`
         """
-        # TODO: update this
         repr_ = {
-            "cycle": self.current_cycle,
+            "number_of_nodes": self.n_nodes,
+            "number_of_input_nodes": self.n_input,
+            "number_of_output_nodes": self.n_output,
+            "number_of_remakes": self.n_remakes,
+            "random_sleep": self.random_sleep,
             "period": self.period,
+            "cycle": self.current_cycle,
+            "color": self.turtle.fillcolor()
             "position": self.turtle.position(),
             "velocity": self.velocity_vector,
         }
