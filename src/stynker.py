@@ -314,7 +314,7 @@ class Stynker(StynkerMind):
         n_output: int,
         color: str,
         environment: Union[str, Environment],
-        friction_coefficient: float = 0.95,
+        friction_coefficient: float = 0.80,
         radius: float = 10,
         initial_position: Tuple[int, int] = (0, 0),
         show_route: bool = False,
