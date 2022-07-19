@@ -22,6 +22,7 @@ def get_environment_inputs(env_name: str) -> Dict[str, Any]:
             ],
             "winning_segment": 2,
             "losing_segment": 5,
+            "name": env_name,
         }
         return hexagonal_environment
 
@@ -42,6 +43,7 @@ def get_environment_inputs(env_name: str) -> Dict[str, Any]:
             ],
             "winning_segment": 5,
             "losing_segment": 10,
+            "name": env_name,
         }
         return simple_maze
 

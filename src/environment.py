@@ -12,6 +12,7 @@ class Environment:
         border_coordinates: List[Tuple[float, float]],
         winning_segment: int,
         losing_segment: int,
+        name: str = None,
     ):
         # Initialize window
         width = 960
@@ -24,6 +25,7 @@ class Environment:
         self.border_coordinates = border_coordinates
         self.winning_segment = winning_segment
         self.losing_segment = losing_segment
+        self.name = name
 
         rotated_coordinates = deque(self.border_coordinates)
         rotated_coordinates.rotate(-1)
