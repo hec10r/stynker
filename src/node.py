@@ -19,7 +19,7 @@ class Node:
         Args:
             name: integer to identify a node
             size: capacity of the node
-            endo: # TODO:
+            endo: how much juice is added to the node after a cycle
             node_type: type of the node: input | output | regular
             **kwargs:
         """
