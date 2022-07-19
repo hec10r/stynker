@@ -1,7 +1,6 @@
 import json
 import time
 import turtle
-from utils import get_environment_inputs
 from src import Stynker
 from src import Environment
 
@@ -10,35 +9,35 @@ cnt_win = 0
 cnt_lose = 0
 
 # Rendering and results logic
-rendering_rate = 1
+rendering_rate = 100
 results_cycles = 100000
 
 num_run_cycles = 0
 results = dict()
 
 cycles = [
-    ("dream", 100),
+    ("dream", 1000),
     ("sleep", 1),
-    ("wake", 500000),
-]
+    ("wake", 1000),
+    ("sleep", 1),
+] * 500
 
 if __name__ == "__main__":
-    environment_inputs = get_environment_inputs(env_name="simple_maze")
     # Initialize environment
-    environment = Environment(**environment_inputs)
+    environment = Environment.get_environment(env_name="simple_maze")
     environment.draw_borders()
 
     # Input parameters
     n_nodes = int(turtle.textinput("Input", "Number of nodes for the Stynkers:"))
 
     # Other parameters
-    show_route = False
+    show_route = True
     vector_magnitude = 2.0
-    n_remakes = 10
+    n_remakes = 100
     n_input = 8
-    n_output = 8
+    n_output = 64
     initial_position = (0, 0)
-    random_sleep = True
+    random_sleep = False
 
     # Initialize Stynkers
     stynker_1 = Stynker(
@@ -64,6 +63,10 @@ if __name__ == "__main__":
         show_route=show_route,
         random_sleep=random_sleep,
     )
+
+    # Saving used parameters
+    stynker_1.to_json("last_parameters_used_stynker_1.json")
+    stynker_2.to_json("last_parameters_used_stynker_2.json")
 
     for period, n_cycles in cycles:
         stynker_1.assign_period(period)
