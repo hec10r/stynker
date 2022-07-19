@@ -503,11 +503,13 @@ class Stynker(StynkerMind):
 
     def apply_friction(self):
         """Reduce the vector components by a friction coefficient"""
-        x, y = self.velocity_vector
-        self.velocity_vector = (
-            x * self.friction_coefficient,
-            y * self.friction_coefficient
-        )
+        # TODO: discuss this with Charlie
+        while Environment.get_norm(self.velocity_vector) > 5:
+            x, y = self.velocity_vector
+            self.velocity_vector = (
+                x * self.friction_coefficient,
+                y * self.friction_coefficient
+            )
 
     def clone_from(self, stk, **kwargs) -> None:
         """
