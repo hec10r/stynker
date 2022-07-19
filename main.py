@@ -10,7 +10,7 @@ cnt_lose = 0
 
 # Rendering and results logic
 rendering_rate = 100
-results_cycles = 100000
+results_cycles = 10000
 
 num_run_cycles = 0
 results = dict()
