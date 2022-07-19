@@ -656,7 +656,7 @@ class Stynker(StynkerMind):
             "random_sleep": self.random_sleep,
             "period": self.period,
             "cycle": self.current_cycle,
-            "color": self.turtle.fillcolor()
+            "color": self.turtle.fillcolor(),
             "position": self.turtle.position(),
             "velocity": self.velocity_vector,
         }
