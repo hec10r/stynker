@@ -1,6 +1,9 @@
+from __future__ import annotations
 import turtle
 from collections import deque
 from typing import List, Tuple
+
+from utils import get_environment_inputs
 
 
 class Environment:
@@ -232,3 +235,15 @@ class Environment:
         """
         x, y = vector
         return (x * x + y * y) ** 0.5
+
+    @classmethod
+    def get_environment(cls, env_name: str) -> Environment:
+        """
+        Get the environment to use
+        Args:
+            env_name: name of the environment to get
+        Returns:
+            Instance of the Environment identified by `env_name`
+        """
+        parameters = get_environment_inputs(env_name=env_name)
+        return cls(**parameters)

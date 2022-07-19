@@ -4,7 +4,7 @@ from typing import Dict, Any
 
 def get_environment_inputs(env_name: str) -> Dict[str, Any]:
     """
-    Get the environment to use
+    Get the inputs of the environment to use
     Args:
         env_name: name of the environment to get
     Returns:
