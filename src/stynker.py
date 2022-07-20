@@ -592,7 +592,7 @@ class Stynker(StynkerMind):
                     if is_inner and distance < min_distance:
                         closest_input_node = node_name
                         min_distance = distance
-                continue
+                break
             elif next_distance <= self.radius * 2:
                 # Get the closest **outer** input node to the wall
                 min_distance = 1e8
@@ -601,7 +601,7 @@ class Stynker(StynkerMind):
                     if distance < min_distance:
                         closest_input_node = node_name
                         min_distance = distance
-                continue
+                break
         result = {
             "previous_position": (x0, y0),
             "new_position": new_position,
