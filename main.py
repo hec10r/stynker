@@ -1,6 +1,7 @@
 import json
 import time
 import turtle
+from argparse import ArgumentParser, Namespace
 from src import Stynker
 from src import Environment
 
@@ -22,7 +23,59 @@ cycles = [
     ("sleep", 1),
 ] * 500
 
+
+def parse_args() -> Namespace:
+    """
+    """
+    parser = ArgumentParser(description="Run Stynker main program")
+
+    parser.add_argument(
+        "-n", "--nodes", type=int,
+        required=False,
+        help="Number of nodes to use"
+    )
+
+    parser.add_argument(
+        "-r", "--remakes", type=int,
+        required=False,
+        help="Number of nodes to remake in each sleep cycle"
+    )
+
+    parser.add_argument(
+        "-i", "--input", type=int,
+        required=False,
+        help="Number of input nodes"
+    )
+
+    parser.add_argument(
+        "-o", "--output", type=int,
+        required=False,
+        help="Number of output nodes"
+    )
+
+    parser.add_argument(
+        "-e", "--environment", type=str,
+        required=False,
+        help="Name of the environment to use"
+    )
+
+    parser.add_argument(
+        "-sr", "--show_route", type=bool,
+        required=False,
+        help="Whether to show the route"
+    )
+
+    parser.add_argument(
+        "-rs", "--random_sleep", type=bool,
+        required=False,
+        help="Whether to show the route"
+    )
+
+    return parser.parse_args()
+
+
 if __name__ == "__main__":
+    args = parse_args()
     # Initialize environment
     environment = Environment.get_environment(env_name="simple_maze")
     environment.draw_borders()
