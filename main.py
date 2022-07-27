@@ -1,9 +1,9 @@
 import json
 import time
-import turtle
-from argparse import ArgumentParser, Namespace
 from src import Stynker
 from src import Environment
+from parameters import cycles, stynker_parameters
+from utils import parse_args
 
 # Win / Lose logic
 cnt_win = 0
@@ -13,112 +13,52 @@ cnt_lose = 0
 rendering_rate = 100
 results_cycles = 10000
 
+# Variables for the results
 num_run_cycles = 0
 results = dict()
 
-cycles = [
-    ("dream", 1000),
-    ("sleep", 1),
-    ("wake", 1000),
-    ("sleep", 1),
-] * 500
-
-
-def parse_args() -> Namespace:
-    """
-    """
-    parser = ArgumentParser(description="Run Stynker main program")
-
-    parser.add_argument(
-        "-n", "--nodes", type=int,
-        required=False,
-        help="Number of nodes to use"
-    )
-
-    parser.add_argument(
-        "-r", "--remakes", type=int,
-        required=False,
-        help="Number of nodes to remake in each sleep cycle"
-    )
-
-    parser.add_argument(
-        "-i", "--input", type=int,
-        required=False,
-        help="Number of input nodes"
-    )
-
-    parser.add_argument(
-        "-o", "--output", type=int,
-        required=False,
-        help="Number of output nodes"
-    )
-
-    parser.add_argument(
-        "-e", "--environment", type=str,
-        required=False,
-        help="Name of the environment to use"
-    )
-
-    parser.add_argument(
-        "-sr", "--show_route", type=bool,
-        required=False,
-        help="Whether to show the route"
-    )
-
-    parser.add_argument(
-        "-rs", "--random_sleep", type=bool,
-        required=False,
-        help="Whether to show the route"
-    )
-
-    return parser.parse_args()
-
 
 if __name__ == "__main__":
+    # Read parameters from command line to overwrite
+    # the ones defined at parameters.py
     args = parse_args()
+    args_dict = {
+        key: val
+        for key, val in vars(args).items()
+        if val is not None
+    }
+    stynker_parameters.update(args_dict)
+
     # Initialize environment
     environment = Environment.get_environment(env_name="simple_maze")
     environment.draw_borders()
 
-    # Input parameters
-    n_nodes = int(turtle.textinput("Input", "Number of nodes for the Stynkers:"))
+    # Parameters related to the environment
+    environment_parameters = {
+        "environment": environment,
+        "initial_position": (0, 0),
+        "show_route": True,
+    }
+    stynker_parameters.update(environment_parameters)
 
-    # Other parameters
-    show_route = True
-    n_remakes = 100
-    n_input = 8
-    n_output = 64
-    initial_position = (0, 0)
-    random_sleep = False
+    # Dropping None values
+    stynker_parameters = {
+        key: val
+        for key, val in stynker_parameters.items()
+        if val is not None
+    }
+    print(f"Running program with the following parameters: {stynker_parameters}")
 
     # Initialize Stynkers
     stynker_1 = Stynker(
-        n_nodes=n_nodes,
-        n_remakes=n_remakes,
-        n_input=n_input,
-        n_output=n_output,
         color="blue",
-        environment=environment,
-        initial_position=initial_position,
-        show_route=show_route,
-        random_sleep=random_sleep,
+        **stynker_parameters,
     )
 
     stynker_2 = Stynker(
-        n_nodes=n_nodes,
-        n_remakes=n_remakes,
-        n_input=n_input,
-        n_output=n_output,
         color="purple",
-        environment=environment,
-        initial_position=initial_position,
-        show_route=show_route,
-        random_sleep=random_sleep,
+        **stynker_parameters,
     )
-
-    # Saving used parameters
-    stynker_1.to_json("last_parameters_used_stynker_1.json")
-    stynker_2.to_json("last_parameters_used_stynker_2.json")
 
     for period, n_cycles in cycles:
         stynker_1.assign_period(period)
@@ -179,3 +119,7 @@ if __name__ == "__main__":
     # Saving the results with the current timestamp
     with open(f"results_{int(time.time())}.json", "w") as f:
         json.dump(results, f)
+
+    # Saving Stynkers state
+    stynker_1.to_json("latest_stynker_1.json")
+    stynker_2.to_json("latest_stynker_2.json")

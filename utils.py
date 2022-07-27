@@ -1,5 +1,55 @@
 import math
+from argparse import Namespace, ArgumentParser
 from typing import Dict, Any
+
+
+def parse_args() -> Namespace:
+    """Parse arguments passed in the command line"""
+    parser = ArgumentParser(description="Run Stynker main program")
+
+    parser.add_argument(
+        "-n", "--nodes", type=int,
+        required=False,
+        help="Number of nodes to use"
+    )
+
+    parser.add_argument(
+        "-r", "--remakes", type=int,
+        required=False,
+        help="Number of nodes to remake in each sleep cycle"
+    )
+
+    parser.add_argument(
+        "-i", "--input", type=int,
+        required=False,
+        help="Number of input nodes"
+    )
+
+    parser.add_argument(
+        "-o", "--output", type=int,
+        required=False,
+        help="Number of output nodes"
+    )
+
+    parser.add_argument(
+        "-e", "--environment", type=str,
+        required=False,
+        help="Name of the environment to use"
+    )
+
+    parser.add_argument(
+        "-sr", "--show_route", type=bool,
+        required=False,
+        help="Whether to show the route"
+    )
+
+    parser.add_argument(
+        "-rs", "--random_sleep", type=bool,
+        required=False,
+        help="Whether to show the route"
+    )
+
+    return parser.parse_args()
 
 
 def get_environment_inputs(env_name: str) -> Dict[str, Any]:
