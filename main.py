@@ -85,7 +85,6 @@ if __name__ == "__main__":
 
     # Other parameters
     show_route = True
-    vector_magnitude = 2.0
     n_remakes = 100
     n_input = 8
     n_output = 64
