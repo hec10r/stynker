@@ -19,15 +19,8 @@ results = dict()
 
 
 if __name__ == "__main__":
-    # Read parameters from command line to overwrite
-    # the ones defined at parameters.py
+    # Read parameters from command line
     args = parse_args()
-    args_dict = {
-        key: val
-        for key, val in vars(args).items()
-        if val is not None
-    }
-    stynker_parameters.update(args_dict)
 
     # Initialize environment
     environment = Environment.get_environment(env_name="simple_maze")
@@ -40,6 +33,14 @@ if __name__ == "__main__":
         "show_route": True,
     }
     stynker_parameters.update(environment_parameters)
+
+    # Overwrite parameters
+    args_dict = {
+        key: val
+        for key, val in vars(args).items()
+        if val is not None
+    }
+    stynker_parameters.update(args_dict)
 
     # Dropping None values
     stynker_parameters = {

@@ -8,25 +8,25 @@ def parse_args() -> Namespace:
     parser = ArgumentParser(description="Run Stynker main program")
 
     parser.add_argument(
-        "-n", "--nodes", type=int,
+        "-n", "--n_nodes", type=int,
         required=False,
         help="Number of nodes to use"
     )
 
     parser.add_argument(
-        "-r", "--remakes", type=int,
+        "-r", "--n_remakes", type=int,
         required=False,
         help="Number of nodes to remake in each sleep cycle"
     )
 
     parser.add_argument(
-        "-i", "--input", type=int,
+        "-i", "--n_input", type=int,
         required=False,
         help="Number of input nodes"
     )
 
     parser.add_argument(
-        "-o", "--output", type=int,
+        "-o", "--n_output", type=int,
         required=False,
         help="Number of output nodes"
     )
