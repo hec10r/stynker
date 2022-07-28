@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 from random import randint
-from typing import Dict, Any
+from typing import Any, Tuple
 
 from constants import node_constants
 
@@ -90,25 +90,25 @@ class Node:
         self.is_active = False
 
     def to_json(self, json_path: str) -> None:
-        parameters = self.to_dict()
+        parameters = self.to_keys()
         with open(json_path, "w") as f:
             json.dump(parameters, f)
 
-    def to_dict(self) -> Dict[str, Any]:
-        parameters = {
-            "name": self.name,
-            "size": self.size,
-            "endo": self.endo,
-            "node_type": self.type,
-            "level": self.level,
-            "damage": self.damage,
-            "is_active": self.is_active,
-        }
+    def to_keys(self) -> Tuple[Any]:
+        parameters = (
+            ("name", self.name),
+            ("size", self.size),
+            ("endo", self.endo),
+            ("node_type", self.type),
+            ("level", self.level),
+            ("damage", self.damage),
+            ("is_active", self.is_active),
+        )
         return parameters
 
     @classmethod
-    def from_dict(cls, parameters_dict: Dict[str, Any]) -> Node:
-        return cls(**parameters_dict)
+    def from_keys(cls, parameters: Tuple[Any]) -> Node:
+        return cls(**{key: val for key, val in parameters})
 
     def __hash__(self) -> int:
         """
