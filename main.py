@@ -1,7 +1,6 @@
 import json
 import time
 from src import Stynker
-from src import Environment
 from parameters import cycles, stynker_parameters
 from utils import parse_args
 
@@ -22,19 +21,8 @@ if __name__ == "__main__":
     # Read parameters from command line
     args = parse_args()
 
-    # Initialize environment
-    environment = Environment.get_environment(env_name="simple_maze")
-    environment.draw_borders()
-
-    # Parameters related to the environment
-    environment_parameters = {
-        "environment": environment,
-        "initial_position": (0, 0),
-        "show_route": True,
-    }
-    stynker_parameters.update(environment_parameters)
-
-    # Overwrite parameters
+    # Get parameters passed by command line
+    # and use them over the
     args_dict = {
         key: val
         for key, val in vars(args).items()
