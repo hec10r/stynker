@@ -367,6 +367,8 @@ class Stynker(StynkerMind):
         if isinstance(environment, Environment):
             self.environment = environment
         elif isinstance(environment, str):
+            # If a string is passed, get the environment
+            # and draw its borders
             self.environment = Environment.get_environment(environment)
             self.environment.draw_borders()
         else:
