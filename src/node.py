@@ -88,14 +88,18 @@ class Node:
         self.is_active = False
 
     def to_json(self, json_path: str) -> None:
+        parameters = self.to_dict()
+        with open(json_path, "w") as f:
+            json.dump(parameters, f)
+
+    def to_dict(self) -> Dict[str, Any]:
         parameters = {
             "name": self.name,
             "size": self.size,
             "endo": self.endo,
             "node_type": self.type,
         }
-        with open(json_path, "w") as f:
-            json.dump(parameters, f)
+        return parameters
 
     @classmethod
     def from_dict(cls, parameters_dict: Dict[str, Any]) -> Node:
