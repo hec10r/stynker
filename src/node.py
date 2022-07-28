@@ -14,6 +14,9 @@ class Node:
         size: int,
         endo: int,
         node_type: str = "regular",
+        level: int = 0,
+        damage: int = 0,
+        is_active: bool = False,
     ) -> None:
         """
 
@@ -27,12 +30,11 @@ class Node:
         self.size = size
         self.endo = endo
         self.type = node_type
+        self.level = level
+        self.damage = damage
+        self.is_active = is_active
         self.is_input = node_type == "input"
         self.is_output = node_type == "output"
-        self.is_active = False
-
-        self.level: int = 0
-        self.damage: int = 0
 
         allowed_types = ("input", "output", "regular")
 
@@ -98,6 +100,9 @@ class Node:
             "size": self.size,
             "endo": self.endo,
             "node_type": self.type,
+            "level": self.level,
+            "damage": self.damage,
+            "is_active": self.is_active,
         }
         return parameters
 
