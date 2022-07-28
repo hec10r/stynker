@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 import math
+import pickle
 import turtle
 from collections import defaultdict
 from copy import deepcopy
@@ -23,6 +24,7 @@ class StynkerMind:
         n_input: int,
         n_output: int,
         random_sleep: bool = False,
+        graph: dict = None,
     ) -> None:
         """
         Graph that represent the mind of an intelligent life
@@ -36,6 +38,9 @@ class StynkerMind:
             random_sleep: if True, remake random nodes while in sleep cycle.
                 If False, remake those with less damage
         """
+        if graph is not None:
+            # TODO: add logic to create graph
+            return
         # Initialize variables
         self.n_nodes = n_nodes
         self.period = None
@@ -319,6 +324,7 @@ class Stynker(StynkerMind):
         initial_position: Tuple[int, int] = (0, 0),
         show_route: bool = False,
         random_sleep: bool = False,
+        graph: dict[Any, Any] = None
     ) -> None:
         """
         Graph that represent an intelligent life
@@ -346,6 +352,7 @@ class Stynker(StynkerMind):
             n_input=n_input,
             n_output=n_output,
             random_sleep=random_sleep,
+            graph=graph,
         )
 
         # Create "body" of the Stynker: turtle object
@@ -617,9 +624,67 @@ class Stynker(StynkerMind):
         }
         return result
 
-    def to_json(self, json_path) -> None:
+    def to_pkl(self, pkl_path: str) -> None:
+        """
+        Save the information of the current instance
+        of Stynker to a pickle file
+        Args:
+            pkl_path: path to store the information
+        """
+        parameters = self.to_dict()
+        # print(parameters)
+        with open(pkl_path, "wb") as f:
+            pickle.dump(parameters, f)
+
+    @classmethod
+    def from_pkl(cls, pkl_path: str) -> Stynker:
+        """
+        Initialize the class from a pickle file
+        Args:
+            pkl_path: path of the pickle with the parameters' info
+        Returns:
+            Instance of the Stynker with the parameters from
+            the pickle file
+        """
+        with open(pkl_path, "rb") as f:
+            parameters = pickle.load(f)
+        graph = parameters["graph"]
+        n_remakes = parameters["n_remakes"]
+        color = parameters["color"]
+        show_route = parameters["show_route"]
+        random_sleep = parameters["random_sleep"]
+        n_input = 0
+        n_output = 0
+        stynker_graph = dict()
+
+        for node, edges in graph.items():
+            node = Node.from_keys(node)
+            edges = {Edge.from_keys(edge) for edge in edges}
+            stynker_graph[node] = edges
+            if node.is_input:
+                n_input += 1
+            elif node.is_output:
+                n_output += 1
+
+        new_stynker = cls(
+            graph=graph,
+            n_remakes=n_remakes,
+            color=color,
+            show_route=show_route,
+            random_sleep=random_sleep,
+            n_output=n_output,
+            n_input=n_input
+        )
+        return new_stynker
+
+    def to_dict(self) -> dict[str, Any]:
+        graph = {
+            node.to_keys(): [edge.to_keys() for edge in edges]
+            for node, edges
+            in self.graph.items()
+        }
         parameters = {
-            "n_nodes": self.n_nodes,
+            "graph": graph,
             "n_remakes": self.n_remakes,
             "n_input": self.n_input,
             "n_output": self.n_output,
@@ -628,23 +693,7 @@ class Stynker(StynkerMind):
             "show_route": self.show_route,
             "random_sleep": self.random_sleep
         }
-        with open(json_path, "w") as f:
-            json.dump(parameters, f)
-
-    @classmethod
-    def from_json(cls, json_path: str) -> Stynker:
-        """
-        Initialize the class from a json file
-        Args:
-            json_path: path of the json with the parameters' info
-        Returns:
-            Instance of the Stynker with the parameters from
-            the json file
-        """
-
-        with open(json_path, "r") as f:
-            parameters = json.load(f)
-        return cls(**parameters)
+        return parameters
 
     def __repr__(self) -> str:
         """
