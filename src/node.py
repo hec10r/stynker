@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 from random import randint
-from typing import Any, Tuple
+from typing import Any
 
 from constants import node_constants
 
@@ -94,7 +94,7 @@ class Node:
         with open(json_path, "w") as f:
             json.dump(parameters, f)
 
-    def to_keys(self) -> Tuple[Any]:
+    def to_keys(self) -> tuple[Any, ...]:
         parameters = (
             ("name", self.name),
             ("size", self.size),
@@ -107,7 +107,7 @@ class Node:
         return parameters
 
     @classmethod
-    def from_keys(cls, parameters: Tuple[Any]) -> Node:
+    def from_keys(cls, parameters: tuple[Any, ...]) -> Node:
         return cls(**{key: val for key, val in parameters})
 
     def __hash__(self) -> int:
