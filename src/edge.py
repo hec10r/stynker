@@ -10,8 +10,8 @@ class Edge:
     def __init__(
         self,
         node: Node,
-        weight: int,
-        length: int,
+        weight: int = None,
+        length: int = None,
         next_steps: list[int] = None,
     ) -> None:
         """
