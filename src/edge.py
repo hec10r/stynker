@@ -1,5 +1,7 @@
 from __future__ import annotations
 import json
+from typing import Any
+
 from .node import Node
 
 
@@ -8,8 +10,9 @@ class Edge:
     def __init__(
         self,
         node: Node,
-        weight: int = None,
-        length: int = None,
+        weight: int,
+        length: int,
+        next_steps: list[int] = None,
     ) -> None:
         """
 
@@ -25,7 +28,7 @@ class Edge:
 
         # Variable to store when to increment the `level` of `node`
         # based on `weight` and `length`
-        self.next_steps: list = list()
+        self.next_steps = next_steps or list()
 
     def run_cycle(self) -> None:
         """Handles the dream/wake cycles"""
@@ -41,6 +44,19 @@ class Edge:
         desired behavior
         """
         self.next_steps.append(self.length)
+
+    def to_keys(self) -> tuple[Any, ...]:
+        parameters = (
+            ("node", self.node.to_keys()),
+            ("weight", self.weight),
+            ("length", self.length),
+            ("next_steps", self.next_steps),
+        )
+        return parameters
+
+    @classmethod
+    def from_keys(cls, parameters: tuple[Any, ...]) -> Edge:
+        return cls(**{key: val for key, val in parameters})
 
     def __hash__(self) -> int:
         """
