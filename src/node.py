@@ -12,7 +12,6 @@ class Node:
         size: int,
         endo: int,
         node_type: str = "regular",
-        **kwargs
     ) -> None:
         """
 
@@ -21,7 +20,6 @@ class Node:
             size: capacity of the node
             endo: how much juice is added to the node after a cycle
             node_type: type of the node: input | output | regular
-            **kwargs:
         """
         self.name = name
         self.size = size
@@ -30,7 +28,6 @@ class Node:
         self.is_input = node_type == "input"
         self.is_output = node_type == "output"
         self.is_active = False
-        self.__dict__.update(**kwargs)
 
         self.level: int = 0
         self.damage: int = 0
