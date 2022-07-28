@@ -368,6 +368,7 @@ class Stynker(StynkerMind):
             self.environment = environment
         elif isinstance(environment, str):
             self.environment = Environment.get_environment(environment)
+            self.environment.draw_borders()
         else:
             raise TypeError(
                 f"The environment input should be an instance of Environment"

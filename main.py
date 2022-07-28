@@ -49,6 +49,8 @@ if __name__ == "__main__":
         **stynker_parameters,
     )
 
+    environment = stynker_1.environment
+
     for period, n_cycles in cycles:
         stynker_1.assign_period(period)
         stynker_2.assign_period(period)
