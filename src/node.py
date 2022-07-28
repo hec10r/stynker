@@ -1,6 +1,8 @@
 from __future__ import annotations
 import json
 from random import randint
+from typing import Dict, Any
+
 from constants import node_constants
 
 
@@ -84,6 +86,20 @@ class Node:
         Mark node as active if it is input or output
         """
         self.is_active = False
+
+    def to_json(self, json_path: str) -> None:
+        parameters = {
+            "name": self.name,
+            "size": self.size,
+            "endo": self.endo,
+            "node_type": self.type,
+        }
+        with open(json_path, "w") as f:
+            json.dump(parameters, f)
+
+    @classmethod
+    def from_dict(cls, parameters_dict: Dict[str, Any]) -> Node:
+        return cls(**parameters_dict)
 
     def __hash__(self) -> int:
         """
