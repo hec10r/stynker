@@ -89,11 +89,6 @@ class Node:
         """
         self.is_active = False
 
-    def to_json(self, json_path: str) -> None:
-        parameters = self.to_keys()
-        with open(json_path, "w") as f:
-            json.dump(parameters, f)
-
     def to_keys(self) -> tuple[Any, ...]:
         parameters = (
             ("name", self.name),
