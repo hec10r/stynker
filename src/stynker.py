@@ -295,36 +295,6 @@ class StynkerMind:
         )
         self.kick_dictionary[i] = kick_vector
 
-    def __repr__(self) -> str:
-        """
-        Overload the repr method to display useful information
-        about the `StynkerMind`
-        Returns:
-            JSON representation of a `Stynker`
-        """
-        repr_ = {
-            "number_of_nodes": self.n_nodes,
-            "number_of_input_nodes": self.n_input,
-            "number_of_output_nodes": self.n_output,
-            "number_of_remakes": self.n_remakes,
-            "random_sleep": self.random_sleep,
-            "period": self.period,
-            "cycle": self.current_cycle,
-
-        }
-        nodes_info = [
-            [
-                json.loads(str(node)),
-                [
-                    json.loads(str(edge))
-                    for edge in edges
-                ],
-            ]
-            for node, edges in self.graph.items()
-        ]
-        repr_["nodes_info"] = nodes_info
-        return json.dumps(repr_, indent=4)
-
 
 class Stynker(StynkerMind):
     """Main object that represents intelligent life"""
