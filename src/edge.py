@@ -56,7 +56,13 @@ class Edge:
 
     @classmethod
     def from_keys(cls, parameters: tuple[Any, ...]) -> Edge:
-        return cls(**{key: val for key, val in parameters})
+        input_parameters = dict()
+        for key, val in parameters:
+            if key == "node":
+                input_parameters[key] = Node.from_keys(val)
+            else:
+                input_parameters[key] = val
+        return cls(**input_parameters)
 
     def __hash__(self) -> int:
         """
