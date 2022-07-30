@@ -58,14 +58,15 @@ class StynkerMind:
                 elif node.is_output:
                     n_output += 1
                 self.nodes_dict[node.name] = node
+        else:
+            self.graph = defaultdict(set)  # Node -> {set of Edges}
+            self.reverse_graph: defaultdict = defaultdict(set)  # Node -> {set of Nodes}
 
         # Initialize variables
         self.n_nodes = n_nodes
         self.period = period
         self.random_sleep = random_sleep
         self.current_cycle = current_cycle
-        self.graph = defaultdict(set)  # Node -> {set of Edges}
-        self.reverse_graph: defaultdict = defaultdict(set)  # Node -> {set of Nodes}
 
         # Input/output logic
         self.n_input = n_input
@@ -637,24 +638,14 @@ class Stynker(StynkerMind):
             parameters = pickle.load(f)
         graph = parameters["graph"]
         n_remakes = parameters["n_remakes"]
+        environment = parameters["environment"]
         color = parameters["color"]
         show_route = parameters["show_route"]
         random_sleep = parameters["random_sleep"]
-        n_input = 0
-        n_output = 0
-        stynker_graph = dict()
-
-        for node, edges in graph.items():
-            node = Node.from_keys(node)
-            edges = {Edge.from_keys(edge) for edge in edges}
-            stynker_graph[node] = edges
-            if node.is_input:
-                n_input += 1
-            elif node.is_output:
-                n_output += 1
 
         new_stynker = cls(
             graph=graph,
+            environment=environment,
             n_remakes=n_remakes,
             color=color,
             show_route=show_route,
