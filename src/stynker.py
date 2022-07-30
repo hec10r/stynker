@@ -20,7 +20,6 @@ class StynkerMind:
     def __init__(
         self,
         n_nodes: int,
-        n_remakes: int,
         n_input: int,
         n_output: int,
         random_sleep: bool = False,
@@ -32,7 +31,6 @@ class StynkerMind:
         Args:
             n_nodes: number of nodes to initialize the graph with.
                 If -1, an empty graph is created
-            n_remakes: number of nodes to remake in the sleep cycle
             n_input: number of node of type input
             n_output: number of node of type output
             random_sleep: if True, remake random nodes while in sleep cycle.
@@ -44,7 +42,6 @@ class StynkerMind:
         # Initialize variables
         self.n_nodes = n_nodes
         self.period = None
-        self.n_remakes = n_remakes
         self.random_sleep = random_sleep
         self.current_cycle: int = 0
         self.graph: defaultdict = defaultdict(set)  # Node -> {set of Edges}
@@ -314,9 +311,9 @@ class Stynker(StynkerMind):
     def __init__(
         self,
         n_nodes: int,
-        n_remakes: int,
         n_input: int,
         n_output: int,
+        n_remakes: int,
         color: str,
         environment: Union[str, Environment],
         friction_coefficient: float = 0.80,
@@ -348,7 +345,6 @@ class Stynker(StynkerMind):
         """
         super().__init__(
             n_nodes=n_nodes,
-            n_remakes=n_remakes,
             n_input=n_input,
             n_output=n_output,
             random_sleep=random_sleep,
@@ -365,6 +361,8 @@ class Stynker(StynkerMind):
         self.initial_position = initial_position
         self.turtle.setposition(*self.initial_position)
         self.radius = radius
+        # Number of remakes per sleep cycle
+        self.n_remakes = n_remakes
         # Set initial velocity vector to (0, 0)
         self.velocity_vector = (0, 0)
         # Friction coefficient
@@ -686,8 +684,6 @@ class Stynker(StynkerMind):
         parameters = {
             "graph": graph,
             "n_remakes": self.n_remakes,
-            "n_input": self.n_input,
-            "n_output": self.n_output,
             "color": self.turtle.fillcolor(),
             "environment": self.environment.name,
             "show_route": self.show_route,
