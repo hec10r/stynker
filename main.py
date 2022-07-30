@@ -112,5 +112,5 @@ if __name__ == "__main__":
         json.dump(results, f)
 
     # Saving Stynkers state
-    stynker_1.to_json("latest_stynker_1.json")
-    stynker_2.to_json("latest_stynker_2.json")
+    stynker_1.to_pkl("latest_stynker_1.pkl")
+    stynker_2.to_pkl
