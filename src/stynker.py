@@ -300,12 +300,12 @@ class Stynker(StynkerMind):
     """Main object that represents intelligent life"""
     def __init__(
         self,
+        environment: Union[str, Environment],
+        color: str,
         n_nodes: int = None,
         n_input: int = None,
         n_output: int = None,
         n_remakes: int = None,
-        color: str = None,
-        environment: Union[str, Environment] = None,
         friction_coefficient: float = 0.80,
         radius: float = 10,
         initial_position: Tuple[int, int] = (0, 0),
