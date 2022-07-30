@@ -22,6 +22,8 @@ class StynkerMind:
         n_nodes: int,
         n_input: int,
         n_output: int,
+        period: str = None,
+        current_cycle: int = 0,
         random_sleep: bool = False,
         graph: dict = None,
     ) -> None:
@@ -36,29 +38,40 @@ class StynkerMind:
             random_sleep: if True, remake random nodes while in sleep cycle.
                 If False, remake those with less damage
         """
+        # Dictionary to get easy access to the nodes by their names
+        self.nodes_dict = dict()
+
         if graph is not None:
-            # TODO: add logic to create graph
-            return
+            n_nodes = len(graph)
+            n_input = 0
+            n_output = 0
+            self.graph = defaultdict(set)
+            # Create reverse graph
+            self.create_reverse_graph()
+
+            for node, edges in graph.items():
+                node = Node.from_keys(node)
+                edges = {Edge.from_keys(edge) for edge in edges}
+                self.graph[node] = edges
+                if node.is_input:
+                    n_input += 1
+                elif node.is_output:
+                    n_output += 1
+                self.nodes_dict[node.name] = node
+
         # Initialize variables
         self.n_nodes = n_nodes
-        self.period = None
+        self.period = period
         self.random_sleep = random_sleep
-        self.current_cycle: int = 0
-        self.graph: defaultdict = defaultdict(set)  # Node -> {set of Edges}
+        self.current_cycle = current_cycle
+        self.graph = defaultdict(set)  # Node -> {set of Edges}
         self.reverse_graph: defaultdict = defaultdict(set)  # Node -> {set of Nodes}
-        self.nodes_dict = dict()
 
         # Input/output logic
         self.n_input = n_input
         self.n_output = n_output
-        self.input_nodes = list()
-        self.output_nodes = list()
         self.kick_dictionary = dict()
         self.input_points = dict()
-
-        # When the n_nodes is equal to -1, no graph is created
-        if self.n_nodes == -1:
-            return
 
         if (self.n_input + self.n_output) > self.n_nodes:
             raise ValueError(
@@ -102,18 +115,25 @@ class StynkerMind:
             else:
                 node_type = "regular"
 
-            node = Node(
-                name=i,
-                size=randint(*node_constants["size_range"]),
-                endo=randint(*node_constants["endo_range"]),
-                node_type=node_type,
-            )
-            self.graph[node] = set()
-            self.nodes_dict[i] = node
+            # Update nodes_dict if a graph is not given
+            if graph is None:
+                node = Node(
+                    name=i,
+                    size=randint(*node_constants["size_range"]),
+                    endo=randint(*node_constants["endo_range"]),
+                    node_type=node_type,
+                )
+                self.graph[node] = set()
+                self.nodes_dict[i] = node
 
-        # Make random outcoming edges
-        for node in self.graph.keys():
-            self.make_random_outcoming_edges(node)
+        # Make random outcoming edges if a graph is not given
+        if graph is not None:
+            for node in self.graph.keys():
+                self.make_random_outcoming_edges(node)
+
+    def create_reverse_graph(self):
+        """From a current graph, create the reverse graph"""
+        pass
 
     def assign_period(self, period_name: str) -> None:
         period_options = ("dream", "sleep", "wake")
@@ -630,7 +650,6 @@ class Stynker(StynkerMind):
             pkl_path: path to store the information
         """
         parameters = self.to_dict()
-        # print(parameters)
         with open(pkl_path, "wb") as f:
             pickle.dump(parameters, f)
 
