@@ -19,9 +19,9 @@ class StynkerMind:
 
     def __init__(
         self,
-        n_nodes: int,
-        n_input: int,
-        n_output: int,
+        n_nodes: int = None,
+        n_input: int = None,
+        n_output: int = None,
         period: str = None,
         current_cycle: int = 0,
         random_sleep: bool = False,
@@ -300,12 +300,12 @@ class Stynker(StynkerMind):
     """Main object that represents intelligent life"""
     def __init__(
         self,
-        n_nodes: int,
-        n_input: int,
-        n_output: int,
-        n_remakes: int,
-        color: str,
-        environment: Union[str, Environment],
+        n_nodes: int = None,
+        n_input: int = None,
+        n_output: int = None,
+        n_remakes: int = None,
+        color: str = None,
+        environment: Union[str, Environment] = None,
         friction_coefficient: float = 0.80,
         radius: float = 10,
         initial_position: Tuple[int, int] = (0, 0),
@@ -659,8 +659,6 @@ class Stynker(StynkerMind):
             color=color,
             show_route=show_route,
             random_sleep=random_sleep,
-            n_output=n_output,
-            n_input=n_input
         )
         return new_stynker
 
