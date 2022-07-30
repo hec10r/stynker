@@ -60,13 +60,13 @@ class StynkerMind:
                 self.nodes_dict[node.name] = node
         else:
             self.graph = defaultdict(set)  # Node -> {set of Edges}
-            self.reverse_graph: defaultdict = defaultdict(set)  # Node -> {set of Nodes}
 
         # Initialize variables
         self.n_nodes = n_nodes
         self.period = period
         self.random_sleep = random_sleep
         self.current_cycle = current_cycle
+        self.reverse_graph: defaultdict = defaultdict(set)  # Node -> {set of Nodes}
 
         # Input/output logic
         self.n_input = n_input
@@ -134,7 +134,9 @@ class StynkerMind:
 
     def create_reverse_graph(self):
         """From a current graph, create the reverse graph"""
-        pass
+        for node, edges in self.graph.items():
+            for edge in edges:
+                self.reverse_graph[edge.node].add(node)
 
     def assign_period(self, period_name: str) -> None:
         period_options = ("dream", "sleep", "wake")
