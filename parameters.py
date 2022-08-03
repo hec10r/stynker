@@ -16,6 +16,7 @@ mind_parameters = {
     "random_sleep": False,
 }
 
+# Information about the environment
 environment_parameters = {
     "environment": "simple_maze",
     "initial_position": (0, 0),
