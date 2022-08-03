@@ -1,7 +1,7 @@
 from __future__ import annotations
 import turtle
 from collections import deque
-from typing import List, Tuple
+from typing import Union
 
 from utils import get_environment_inputs
 
@@ -9,7 +9,7 @@ from utils import get_environment_inputs
 class Environment:
     def __init__(
         self,
-        border_coordinates: List[Tuple[float, float]],
+        border_coordinates: list[tuple[float, float]],
         winning_segment: int,
         losing_segment: int,
         name: str = None,
@@ -45,7 +45,7 @@ class Environment:
         # a, b, c parameters who satisfy ax + by + c = 0
         self.border_parameters = list(zip(a_list[:-1], b_list[:-1], c_list[:-1]))
 
-    def draw_borders(self):
+    def draw_borders(self) -> turtle.Turtle:
         """Draw the borders of the environment"""
         border = turtle.Turtle()
         border.speed(0)
@@ -66,7 +66,11 @@ class Environment:
         return border
 
     @staticmethod
-    def calculate_velocity_vector(velocity_vector, a, b) -> Tuple[float, float]:
+    def calculate_velocity_vector(
+        velocity_vector: tuple[float, float],
+        a: float,
+        b: float
+    ) -> tuple[float, float]:
         """
         Given a velocity vector, and the constants that describe a 'wall' in its
         general form (ax + by + c = 0), returns the new velocity vector after
@@ -94,7 +98,12 @@ class Environment:
         return new_velocity_vector
 
     @staticmethod
-    def distance_to_segment(x0, y0, p1, p2):
+    def distance_to_segment(
+        x0: float,
+        y0: float,
+        p1: tuple[float, float],
+        p2: tuple[float, float]
+    ) -> float:
         """
         Given a point and a segment defined by the points p1 and p2,
         get the shortest distance to the segment
@@ -120,7 +129,10 @@ class Environment:
         return d_segment
 
     @staticmethod
-    def get_general_form(p1: Tuple[float, float], p2: Tuple[float, float]) -> Tuple[float, float, float]:
+    def get_general_form(
+        p1: tuple[float, float],
+        p2: tuple[float, float]
+    ) -> tuple[float, float, float]:
         """
         Given two points, return the general form of the line defined
         by them
@@ -139,7 +151,13 @@ class Environment:
         return a, b, c
 
     @staticmethod
-    def distance_to_line(x0, y0, a, b, c) -> float:
+    def distance_to_line(
+        x0: float,
+        y0: float,
+        a: float,
+        b: float,
+        c: float
+    ) -> float:
         """
         Given a point and a line represented in a general form (ax + by + c = 0),
         get the closest distance from the point to the line
@@ -156,7 +174,13 @@ class Environment:
         return abs(Environment._distance_to_line(x0, y0, a, b, c))
 
     @staticmethod
-    def _distance_to_line(x0, y0, a, b, c) -> float:
+    def _distance_to_line(
+        x0: float,
+        y0: float,
+        a: float,
+        b: float,
+        c: float
+    ) -> float:
         """
         Given a point and a line represented in a general form (ax + by + c = 0),
         get the closest distance from the point to the line
@@ -174,7 +198,12 @@ class Environment:
         return distance
 
     @staticmethod
-    def distance_to_point(x0, y0, x1, y1) -> float:
+    def distance_to_point(
+        x0: float,
+        y0: float,
+        x1: float,
+        y1: float
+    ) -> float:
         """
         Given a pair of points, get the distance between them
         Args:
@@ -188,7 +217,13 @@ class Environment:
         return Environment.get_norm(((x0-x1), (y0-y1)))
 
     @staticmethod
-    def projection(x0, y0, a, b, c) -> Tuple[float, float]:
+    def projection(
+        x0: float,
+        y0: float,
+        a: float,
+        b: float,
+        c: float
+    ) -> tuple[float, float]:
         """
         Get the projection of the point (x0, y0) over the line described
         by ax + by + c = 0
@@ -208,7 +243,13 @@ class Environment:
         return x, y
 
     @staticmethod
-    def reflect_point_over_line(x0, y0, a, b, c) -> Tuple[float, float]:
+    def reflect_point_over_line(
+        x0: float,
+        y0: float,
+        a: float,
+        b: float,
+        c: float
+    ) -> tuple[float, float]:
         """
         Given a point and a line represented in a general form (ax + by + c = 0),
         get the reflection of the point over the line
@@ -227,7 +268,7 @@ class Environment:
         return x / norm, y / norm
 
     @staticmethod
-    def get_norm(vector: Tuple[float, float]) -> float:
+    def get_norm(vector: tuple[float, float]) -> float:
         """
         Get the euclidean norm of a (x, y) vector
         Args:
@@ -237,6 +278,81 @@ class Environment:
         """
         x, y = vector
         return (x * x + y * y) ** 0.5
+
+    @staticmethod
+    def are_ccw(
+        p1: tuple[float, float],
+        p2: tuple[float, float],
+        p3: tuple[float, float]
+    ) -> bool:
+        """
+        Given three points: p1, p2, and p3, determine
+        if they are listed in counterclockwise order
+        Args:
+            p1: first point
+            p2: second point
+            p3: third point
+
+        Returns:
+            True if they are listed in counterclockwise order,
+            False otherwise
+        """
+        p1x, p1y = p1
+        p2x, p2y = p2
+        p3x, p3y = p3
+        return (p3y-p1y) * (p2x-p1x) > (p2y-p1y)*(p3x-p1x)
+
+    @staticmethod
+    def intersect(
+        p1: tuple[float, float],
+        p2: tuple[float, float],
+        q1: tuple[float, float],
+        q2: tuple[float, float],
+    ) -> bool:
+        """
+        Given two segments P and Q, defined by two points each one:
+        {p1, p2}, and {q1, q2} respectively, return whether they
+        intersect.
+
+        It uses the logic described here:
+        https://bryceboe.com/2006/10/23/line-segment-intersection-algorithm/
+
+        Args:
+            p1: first point of segment P
+            p2: second point of segment P
+            q1: first point of segment Q
+            q2: second point of segment Q
+
+        Returns:
+            True if they intersect, False otherwise
+        """
+        cond1 = Environment.are_ccw(p1, q1, q2) != Environment.are_ccw(p2, q1, q2)
+        cond2 = Environment.are_ccw(p1, p2, q1) != Environment.are_ccw(p1, p2, q2)
+        return cond1 and cond2
+
+    @staticmethod
+    def get_segment_intersection(
+        p1: tuple[float, float],
+        p2: tuple[float, float],
+        q1: tuple[float, float],
+        q2: tuple[float, float],
+    ) -> Union[tuple[float, float], None]:
+        """
+        Given two segments P and Q, defined by two points each one:
+        {p1, p2}, and {q1, q2} respectively, return the point where
+        they intersect
+        Args:
+            p1: first point of segment P
+            p2: second point of segment P
+            q1: first point of segment Q
+            q2: second point of segment Q
+
+        Returns:
+            The point where both segments intersect, if they don't,
+            return None
+        """
+        # TODO: is this really necessary?
+        pass
 
     @classmethod
     def get_environment(cls, env_name: str) -> Environment:
