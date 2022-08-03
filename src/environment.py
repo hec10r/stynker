@@ -262,10 +262,10 @@ class Environment:
         Returns:
             Position of the point reflected over the line
         """
-        norm = Environment.get_norm((a, b))
+        z = a*a + b*b
         x = x0 * (b ** 2 - a ** 2) - 2 * a * (b * y0 + c)
         y = y0 * (a ** 2 - b ** 2) - 2 * b * (a * x0 + c)
-        return x / norm, y / norm
+        return x / z, y / z
 
     @staticmethod
     def get_norm(vector: tuple[float, float]) -> float:
