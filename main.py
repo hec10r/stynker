@@ -113,4 +113,4 @@ if __name__ == "__main__":
 
     # Saving Stynkers state
     stynker_1.to_pkl("latest_stynker_1.pkl")
-    stynker_2.to_pkl
+    stynker_2.to_pkl("latest_stynker_2.pkl")
