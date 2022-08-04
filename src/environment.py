@@ -29,13 +29,14 @@ class Environment:
 
         rotated_coordinates = deque(self.border_coordinates)
         rotated_coordinates.rotate(-1)
+        self.segments = zip(self.border_coordinates, list(rotated_coordinates))
 
         # Lists to store parameters of general form equations
         a_list = list()
         b_list = list()
         c_list = list()
 
-        for p1, p2 in zip(self.border_coordinates, list(rotated_coordinates)):
+        for p1, p2 in self.segments:
             a, b, c = self.get_general_form(p1, p2)
             a_list.append(a)
             b_list.append(b)
