@@ -29,7 +29,7 @@ class Environment:
 
         rotated_coordinates = deque(self.border_coordinates)
         rotated_coordinates.rotate(-1)
-        self.segments = list(zip(self.border_coordinates, list(rotated_coordinates)))
+        self.segments = list(zip(self.border_coordinates, list(rotated_coordinates)))[:-1]
 
         # Lists to store parameters of general form equations
         a_list = list()
@@ -44,7 +44,7 @@ class Environment:
 
         # For each border of the environment, we are getting the
         # a, b, c parameters who satisfy ax + by + c = 0
-        self.border_parameters = list(zip(a_list[:-1], b_list[:-1], c_list[:-1]))
+        self.border_parameters = list(zip(a_list, b_list, c_list))
 
     def draw_borders(self) -> turtle.Turtle:
         """Draw the borders of the environment"""
