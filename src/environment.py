@@ -29,6 +29,9 @@ class Environment:
 
         rotated_coordinates = deque(self.border_coordinates)
         rotated_coordinates.rotate(-1)
+
+        # Since the coordinates are circular, it is necessary to
+        # ignore the last segment
         self.segments = list(zip(self.border_coordinates, list(rotated_coordinates)))[:-1]
 
         # Lists to store parameters of general form equations
