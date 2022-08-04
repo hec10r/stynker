@@ -29,7 +29,7 @@ class Environment:
 
         rotated_coordinates = deque(self.border_coordinates)
         rotated_coordinates.rotate(-1)
-        self.segments = zip(self.border_coordinates, list(rotated_coordinates))
+        self.segments = list(zip(self.border_coordinates, list(rotated_coordinates)))
 
         # Lists to store parameters of general form equations
         a_list = list()
