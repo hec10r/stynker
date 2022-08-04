@@ -34,21 +34,6 @@ class Environment:
         # ignore the last segment
         self.segments = list(zip(self.border_coordinates, list(rotated_coordinates)))[:-1]
 
-        # Lists to store parameters of general form equations
-        a_list = list()
-        b_list = list()
-        c_list = list()
-
-        for p1, p2 in self.segments:
-            a, b, c = self.get_general_form(p1, p2)
-            a_list.append(a)
-            b_list.append(b)
-            c_list.append(c)
-
-        # For each border of the environment, we are getting the
-        # a, b, c parameters who satisfy ax + by + c = 0
-        self.border_parameters = list(zip(a_list, b_list, c_list))
-
     def draw_borders(self) -> turtle.Turtle:
         """Draw the borders of the environment"""
         border = turtle.Turtle()
