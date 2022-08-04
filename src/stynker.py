@@ -566,43 +566,27 @@ class Stynker(StynkerMind):
         won = False
         lost = False
         closest_input_node = None
-        for i, (a, b, c) in enumerate(self.environment.border_parameters):
-            p1 = self.environment.border_coordinates[i]
-            p2 = self.environment.border_coordinates[i + 1]
+        first_intersection = None
+        min_distance = 1e7
+
+        for i, (p1, p2) in enumerate(self.environment.segments):
             current_distance = self.environment.distance_to_segment(x0, y0, p1, p2)
-            next_distance = self.environment.distance_to_segment(x1, y1, p1, p2)
+            if self.environment.intersect(p1, p2, (x0, y0), (x1, y1)):
+                if current_distance < min_distance:
+                    first_intersection = i
+                    a, b, c = self.environment.get_general_form(p1, p2)
 
-            # Should the Stynker bounce?
-            if next_distance <= self.radius and next_distance < current_distance:
-                # Get new velocity vector
-                new_velocity_vector = self.environment.calculate_velocity_vector(velocity_vector, a, b)
-                # Keeps the same position. Ideally, this will be made more robust
-                new_position = (x0, y0)
-                touch_border = True
-                if i == self.environment.winning_segment - 1:
-                    won = True
-                if i == self.environment.losing_segment - 1:
-                    lost = True
+        # If the ball bounces
+        if first_intersection is not None:
+            touch_border = True
+            new_position = self.environment.reflect_point_over_line(*new_position, a, b, c)
+            new_velocity_vector = self.environment.calculate_velocity_vector(velocity_vector, a, b)
+            if first_intersection == self.environment.winning_segment - 1:
+                won = True
+            if first_intersection == self.environment.losing_segment - 1:
+                lost = True
+        # TODO: implement input logic
 
-                # Get the closest **inner** input node to the wall
-                min_distance = 1e8
-                for node_name, point in self.input_points.items():
-                    # Whether the node is in the inner ring
-                    is_inner = node_name < self.n_input / 2
-                    distance = self.environment.distance_to_segment(point[0], point[1], p1, p2)
-                    if is_inner and distance < min_distance:
-                        closest_input_node = node_name
-                        min_distance = distance
-                break
-            elif next_distance <= self.radius * 2:
-                # Get the closest **outer** input node to the wall
-                min_distance = 1e8
-                for node_name, point in self.input_points.items():
-                    distance = self.environment.distance_to_segment(point[0], point[1], p1, p2)
-                    if distance < min_distance:
-                        closest_input_node = node_name
-                        min_distance = distance
-                break
         result = {
             "previous_position": (x0, y0),
             "new_position": new_position,
