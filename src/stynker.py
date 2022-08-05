@@ -551,13 +551,16 @@ class Stynker(StynkerMind):
             A dictionary with the information of the Stynker
             after the interaction with the environment
         """
-        # Current position
-        x0, y0 = self.turtle.position()
+        # Initial position
+        initial_position = self.turtle.position()
         # Current velocity vector
         velocity_vector = self.velocity_vector
         # New position
-        x1, y1 = x0 + velocity_vector[0], y0 + velocity_vector[1]
-        new_position = (x1, y1)
+        new_position = (
+            initial_position[0] + velocity_vector[0],
+            initial_position[1] + velocity_vector[1]
+        )
+        x1, y1 = new_position
         # New velocity vector
         new_velocity_vector = velocity_vector
 
@@ -566,29 +569,21 @@ class Stynker(StynkerMind):
         won = False
         lost = False
         closest_input_node = None
-        first_intersection = None
-        min_distance = 1e7
 
-        for i, (p1, p2) in enumerate(self.environment.segments):
-            current_distance = self.environment.distance_to_segment(x0, y0, p1, p2)
-            if self.environment.intersect(p1, p2, (x0, y0), (x1, y1)):
-                if current_distance < min_distance:
-                    first_intersection = i
-                    a, b, c = self.environment.get_general_form(p1, p2)
-
-        # If the ball bounces
-        if first_intersection is not None:
-            touch_border = True
-            new_position = self.environment.reflect_point_over_line(*new_position, a, b, c)
-            new_velocity_vector = self.environment.calculate_velocity_vector(velocity_vector, a, b)
-            if first_intersection == self.environment.winning_segment - 1:
-                won = True
-            if first_intersection == self.environment.losing_segment - 1:
-                lost = True
+        for segment_ix, (p1, p2) in enumerate(self.environment.segments):
+            if self.environment.intersect(p1, p2, initial_position, (x1, y1)):
+                a, b, c = self.environment.get_general_form(p1, p2)
+                touch_border = True
+                new_position = self.environment.reflect_point_over_line(*new_position, a, b, c)
+                new_velocity_vector = self.environment.calculate_velocity_vector(new_velocity_vector, a, b)
+                if segment_ix == self.environment.winning_segment - 1:
+                    won = True
+                if segment_ix == self.environment.losing_segment - 1:
+                    lost = True
         # TODO: implement input logic
 
         result = {
-            "previous_position": (x0, y0),
+            "previous_position": initial_position,
             "new_position": new_position,
             "initial_velocity_vector": velocity_vector,
             "final_velocity_vector": new_velocity_vector,
