@@ -1,6 +1,5 @@
 from __future__ import annotations
 import turtle
-from collections import deque
 from typing import Any
 
 from utils import get_environment_inputs
