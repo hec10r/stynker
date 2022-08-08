@@ -1,7 +1,7 @@
 from __future__ import annotations
 import turtle
 from collections import deque
-from typing import Union
+from typing import Any
 
 from utils import get_environment_inputs
 
@@ -10,10 +10,36 @@ class Environment:
     def __init__(
         self,
         border_coordinates: list[tuple[float, float]],
-        winning_segment: int,
-        losing_segment: int,
+        winning_segment: tuple[tuple[float, float], tuple[float, float]],
+        losing_segment: tuple[tuple[float, float], tuple[float, float]],
         name: str = None,
     ):
+        """
+        Initialize an environment with the coordinates specified
+        in `border_coordinates` variable.
+
+        The format of the coordinates must be a list of points,
+        where each point represents a 'corner' of the environment.
+
+        The easiest way to think about the border, is to draw it
+        mentally without lifting the pencil.
+
+        Other important concept is a 'segment'. A segment is
+        basically the line that connects to consecutive `corners`.
+        If when drawing the environment, the pen passes over
+        the same segment more than once, it is still considered
+        a single segment. This implies that usually the number of
+        segments is less than the number of coordinates.
+
+        Args:
+            border_coordinates: list of points where the borders
+                are specified
+            winning_segment: tuple with the two pair of points
+                that define the winning segment
+            losing_segment: tuple with the two pair of points
+                that define the losing segment
+            name: name of the environment
+        """
         # Initialize window
         width = 960
         height = 960
@@ -26,13 +52,7 @@ class Environment:
         self.winning_segment = winning_segment
         self.losing_segment = losing_segment
         self.name = name
-
-        rotated_coordinates = deque(self.border_coordinates)
-        rotated_coordinates.rotate(-1)
-
-        # Since the coordinates are circular, it is necessary to
-        # ignore the last segment
-        self.segments = list(zip(self.border_coordinates, list(rotated_coordinates)))[:-1]
+        self.segments = self.get_segments()
 
     def draw_borders(self) -> turtle.Turtle:
         """Draw the borders of the environment"""
@@ -40,19 +60,88 @@ class Environment:
         border.speed(0)
         border.penup()
         border.pensize(5)
-        # The coordinates of the environment must be `closed`: last one equals to first
+        previous_coord = None
         for i, coord in enumerate(self.border_coordinates):
-            if i == self.winning_segment:
+            segment = (previous_coord, coord)
+            if segment == self.winning_segment:
                 border.pencolor("#2dc937")
-            elif i == self.losing_segment:
+            elif segment == self.losing_segment:
                 border.pencolor("#cc3232")
             else:
                 border.pencolor("black")
                 border.pensize()
             border.setposition(*coord)
             border.pendown()
+            previous_coord = coord
         self.window.update()
         return border
+
+    def get_segments(self) -> list[tuple[tuple[float, float], tuple[float, float]]]:
+        """
+        From the corners of the border, create the list
+        of segments used to draw the environment
+        """
+        segments = list()
+        num_points = len(self.border_coordinates)
+        for i, coordinate in enumerate(self.border_coordinates):
+            # The segments must be closed, so the last
+            # coordinate has to connect with the first
+            next_coordinate = self.border_coordinates[(i + 1) % num_points]
+            segment = (coordinate, next_coordinate)
+            reverse_segment = (next_coordinate, coordinate)
+            # Ignore segments that are already included
+            if segment in segments or reverse_segment in segments:
+                continue
+            # If the segments are equal, ignore them
+            else:
+                segments.append(segment)
+        return segments
+
+    def get_first_intersection_info(
+        self,
+        initial_position: tuple[float, float],
+        final_position: tuple[float, float],
+        excluded_segment: tuple[tuple[float, float], tuple[float, float]] = None
+    ) -> dict[str, Any]:
+        """
+        Given two points (positions of the ball) in the environment,
+        return useful information about its first interaction with
+        the environment border
+
+        Args:
+            initial_position: initial position of the ball
+            final_position: final position of the ball
+            excluded_segment:
+
+        Returns:
+            Dictionary with useful information about the interaction
+            with the environment border.
+
+        """
+        intersection_info = {
+            "intersection_point": None,
+            "distance": None,
+            "segment_ix": None,
+            "segment_parameters": None,
+        }
+        min_distance = 1e8
+        for (p1, p2) in self.segments:
+            # if (p1, p2) == excluded_segment:
+            #     continue
+            if self.intersect(p1, p2, initial_position, final_position):
+                intersection = self.get_segment_intersection(p1, p2, initial_position, final_position)
+                d = self.distance_to_point(*initial_position, *intersection)
+                if d < min_distance:
+                    first_intersection = intersection
+                    min_distance = d
+
+                    # Save info
+                    intersection_info["intersection_point"] = first_intersection
+                    intersection_info["distance"] = min_distance
+                    intersection_info["segment"] = (p1, p2)
+                    intersection_info["segment_parameters"] = self.get_general_form(p1, p2)
+
+        return intersection_info
 
     @staticmethod
     def calculate_velocity_vector(
@@ -325,7 +414,7 @@ class Environment:
         p2: tuple[float, float],
         q1: tuple[float, float],
         q2: tuple[float, float],
-    ) -> Union[tuple[float, float], None]:
+    ) -> tuple[float, float]:
         """
         Given two segments P and Q, defined by two points each one:
         {p1, p2}, and {q1, q2} respectively, return the point where
@@ -338,10 +427,18 @@ class Environment:
 
         Returns:
             The point where both segments intersect, if they don't,
-            return None
+            raises an Error
         """
-        # TODO: is this really necessary?
-        pass
+        if not Environment.intersect(p1, p2, q1, q2):
+            raise ValueError("Segments don't intersect")
+
+        a1, b1, c1 = Environment.get_general_form(p1, p2)
+        a2, b2, c2 = Environment.get_general_form(q1, q2)
+
+        determinant = a1*b2-a2*b1
+        x = (b1*c2 - b2*c1) / determinant
+        y = (c1*a2 - c2*a1) / determinant
+        return x, y
 
     @classmethod
     def get_environment(cls, env_name: str) -> Environment:
