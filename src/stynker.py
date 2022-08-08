@@ -589,8 +589,6 @@ class Stynker(StynkerMind):
                 new_position,
             )
 
-
-
         # TODO: Implement input logic
 
         result = {
