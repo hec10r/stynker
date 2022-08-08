@@ -70,8 +70,26 @@ def get_environment_inputs(env_name: str) -> Dict[str, Any]:
                 )
                 for alpha in range(0, 420, 60)
             ],
-            "winning_segment": 2,
-            "losing_segment": 5,
+            "winning_segment": (
+                (
+                    math.cos(math.radians(60)) * hexagonal_radius,
+                    math.sin(math.radians(60)) * hexagonal_radius
+                ),
+                (
+                    math.cos(math.radians(120)) * hexagonal_radius,
+                    math.sin(math.radians(120)) * hexagonal_radius
+                ),
+            ),
+            "losing_segment": (
+                (
+                    math.cos(math.radians(240)) * hexagonal_radius,
+                    math.sin(math.radians(240)) * hexagonal_radius
+                ),
+                (
+                    math.cos(math.radians(300)) * hexagonal_radius,
+                    math.sin(math.radians(300)) * hexagonal_radius
+                ),
+            ),
             "name": env_name,
         }
         return hexagonal_environment
@@ -91,8 +109,8 @@ def get_environment_inputs(env_name: str) -> Dict[str, Any]:
                 (120, -360),
                 (360, -360),
             ],
-            "winning_segment": 5,
-            "losing_segment": 10,
+            "winning_segment": ((-120, 360), (-360, 360)),
+            "losing_segment": ((120, -360), (360, -360)),
             "name": env_name,
         }
         return simple_maze
