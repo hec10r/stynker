@@ -101,7 +101,6 @@ class Environment:
         self,
         initial_position: tuple[float, float],
         final_position: tuple[float, float],
-        excluded_segment: tuple[tuple[float, float], tuple[float, float]] = None
     ) -> dict[str, Any]:
         """
         Given two points (positions of the ball) in the environment,
@@ -111,7 +110,6 @@ class Environment:
         Args:
             initial_position: initial position of the ball
             final_position: final position of the ball
-            excluded_segment:
 
         Returns:
             Dictionary with useful information about the interaction
@@ -121,16 +119,17 @@ class Environment:
         intersection_info = {
             "intersection_point": None,
             "distance": None,
-            "segment_ix": None,
+            "segment": None,
             "segment_parameters": None,
         }
         min_distance = 1e8
         for (p1, p2) in self.segments:
-            # if (p1, p2) == excluded_segment:
-            #     continue
             if self.intersect(p1, p2, initial_position, final_position):
                 intersection = self.get_segment_intersection(p1, p2, initial_position, final_position)
                 d = self.distance_to_point(*initial_position, *intersection)
+                # Ignore a segment if the point relies on it
+                if d < 1e-12:
+                    continue
                 if d < min_distance:
                     first_intersection = intersection
                     min_distance = d
