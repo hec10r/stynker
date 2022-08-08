@@ -504,13 +504,11 @@ class Stynker(StynkerMind):
 
     def apply_friction(self):
         """Reduce the vector components by a friction coefficient"""
-        # TODO: discuss this with Charlie
-        while Environment.get_norm(self.velocity_vector) > 5:
-            x, y = self.velocity_vector
-            self.velocity_vector = (
-                x * self.friction_coefficient,
-                y * self.friction_coefficient
-            )
+        x, y = self.velocity_vector
+        self.velocity_vector = (
+            x * self.friction_coefficient,
+            y * self.friction_coefficient
+        )
 
     def clone_from(self, stk, **kwargs) -> None:
         """
@@ -553,6 +551,7 @@ class Stynker(StynkerMind):
         """
         # Initial position
         initial_position = self.turtle.position()
+        last_position = initial_position
         # Current velocity vector
         velocity_vector = self.velocity_vector
         # New position
@@ -560,7 +559,6 @@ class Stynker(StynkerMind):
             initial_position[0] + velocity_vector[0],
             initial_position[1] + velocity_vector[1]
         )
-        x1, y1 = new_position
         # New velocity vector
         new_velocity_vector = velocity_vector
 
@@ -570,17 +568,30 @@ class Stynker(StynkerMind):
         lost = False
         closest_input_node = None
 
-        for segment_ix, (p1, p2) in enumerate(self.environment.segments):
-            if self.environment.intersect(p1, p2, initial_position, (x1, y1)):
-                a, b, c = self.environment.get_general_form(p1, p2)
-                touch_border = True
-                new_position = self.environment.reflect_point_over_line(*new_position, a, b, c)
-                new_velocity_vector = self.environment.calculate_velocity_vector(new_velocity_vector, a, b)
-                if segment_ix == self.environment.winning_segment - 1:
-                    won = True
-                if segment_ix == self.environment.losing_segment - 1:
-                    lost = True
-        # TODO: implement input logic
+        first_intersection_info = self.environment.get_first_intersection_info(last_position, new_position)
+
+        while (intersection_point := first_intersection_info["intersection_point"]) is not None:
+            touch_border = True
+            segment = first_intersection_info["segment"]
+            a, b, c = first_intersection_info["segment_parameters"]
+            if segment == self.environment.winning_segment:
+                won = True
+                break
+            if segment == self.environment.losing_segment:
+                lost = True
+                break
+
+            last_position = intersection_point
+            new_position = self.environment.reflect_point_over_line(*new_position, a, b, c)
+            new_velocity_vector = self.environment.calculate_velocity_vector(new_velocity_vector, a, b)
+            first_intersection_info = self.environment.get_first_intersection_info(
+                last_position,
+                new_position,
+            )
+
+
+
+        # TODO: Implement input logic
 
         result = {
             "previous_position": initial_position,
