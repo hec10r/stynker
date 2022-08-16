@@ -124,11 +124,11 @@ class Environment:
         min_distance = 1e8
         for (p1, p2) in self.segments:
             if self.intersect(p1, p2, initial_position, final_position):
+                # Ignore a segment if the point relies on it
+                if self.distance_to_segment(*initial_position, p1, p2) < 1e-12:
+                    continue
                 intersection = self.get_segment_intersection(p1, p2, initial_position, final_position)
                 d = self.distance_to_point(*initial_position, *intersection)
-                # Ignore a segment if the point relies on it
-                if d < 1e-12:
-                    continue
                 if d < min_distance:
                     first_intersection = intersection
                     min_distance = d
