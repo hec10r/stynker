@@ -11,6 +11,7 @@ class Environment:
         border_coordinates: list[tuple[float, float]],
         winning_segment: tuple[tuple[float, float], tuple[float, float]],
         losing_segment: tuple[tuple[float, float], tuple[float, float]],
+        segments: tuple[tuple[float, float], ...],
         name: str = None,
     ):
         """
@@ -51,7 +52,7 @@ class Environment:
         self.winning_segment = winning_segment
         self.losing_segment = losing_segment
         self.name = name
-        self.segments = self.get_segments()
+        self.segments = segments
 
     def draw_borders(self) -> turtle.Turtle:
         """Draw the borders of the environment"""
@@ -62,9 +63,15 @@ class Environment:
         previous_coord = None
         for i, coord in enumerate(self.border_coordinates):
             segment = (previous_coord, coord)
-            if segment == self.winning_segment:
+            if (
+                previous_coord is not None
+                and self.segment_contained(segment, self.winning_segment)
+            ):
                 border.pencolor("#2dc937")
-            elif segment == self.losing_segment:
+            elif (
+                previous_coord is not None
+                and self.segment_contained(segment, self.losing_segment)
+            ):
                 border.pencolor("#cc3232")
             else:
                 border.pencolor("black")
@@ -437,6 +444,62 @@ class Environment:
         x = (b1*c2 - b2*c1) / determinant
         y = (c1*a2 - c2*a1) / determinant
         return x, y
+
+    @staticmethod
+    def segment_contained(
+        big_segment: tuple[tuple[float, float], tuple[float, float]],
+        small_segment: tuple[tuple[float, float], tuple[float, float]],
+    ) -> bool:
+        """
+        Check if `small_segment` is a 'subsegment' of `big_segment`.
+        That means: every point that belongs to `small_segment`,
+        belongs to `big_segment`.
+
+        Currently, only supports vertical and horizontal lines
+        Args:
+            big_segment: tuple of two points defining a segment
+            small_segment: tuple of two points defining a segment
+
+        Returns:
+            Boolean indicating if `small_segment` is geometrically
+            contained in `big_segment`
+        """
+        big_segment = sorted(big_segment)
+        small_segment = sorted(small_segment)
+
+        # Check if the two lines have the same slope
+        if not Environment.get_slope(*big_segment) == Environment.get_slope(*big_segment):
+            return False
+
+        p1, p2 = big_segment
+        q1, q2 = small_segment
+
+        are_in_interval = (p1 <= q1 <= p2) and (p1 <= q1 <= p2)
+        same_axis = p1[0] == q1[0] or p1[1] == q1[1]
+
+        return are_in_interval and same_axis
+
+    @staticmethod
+    def get_slope(p1: tuple[float, float], p2: tuple[float, float]) -> float:
+        """
+        Given two points, p1 and p2, return the slope
+        of the line defined by them
+
+        Args:
+            p1: first point
+            p2: second point
+
+        Returns:
+            Float representing the slope of the line that passes
+            through both point. float("inf") if line is vertical
+        """
+        x1, y1 = p1
+        x2, y2 = p2
+        try:
+            m = (y2 - y1) / (x2 - x1)
+        except ZeroDivisionError:
+            m = float("inf")
+        return m
 
     @classmethod
     def get_environment(cls, env_name: str) -> Environment:
