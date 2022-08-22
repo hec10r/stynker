@@ -11,7 +11,7 @@ class Environment:
         border_coordinates: list[tuple[float, float]],
         winning_segment: tuple[tuple[float, float], tuple[float, float]],
         losing_segment: tuple[tuple[float, float], tuple[float, float]],
-        segments: tuple[tuple[float, float], ...],
+        inner_segments: tuple[tuple[float, float], ...],
         name: str = None,
     ):
         """
@@ -52,7 +52,8 @@ class Environment:
         self.winning_segment = winning_segment
         self.losing_segment = losing_segment
         self.name = name
-        self.segments = segments
+        self.inner_segments = inner_segments
+        self.outer_segments = self.get_segments()
 
     def draw_borders(self) -> turtle.Turtle:
         """Draw the borders of the environment"""
@@ -129,7 +130,7 @@ class Environment:
             "segment_parameters": None,
         }
         min_distance = 1e8
-        for (p1, p2) in self.segments:
+        for (p1, p2) in self.inner_segments:
             if self.intersect(p1, p2, initial_position, final_position):
                 # Ignore a segment if the point relies on it
                 if self.distance_to_segment(*initial_position, p1, p2) < 1e-12:

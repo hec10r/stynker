@@ -109,7 +109,7 @@ def get_environment_inputs(env_name: str) -> Dict[str, Any]:
                 (120, -360),
                 (360, -360),
             ],
-            "segments": [
+            "inner_segments": [
                 ((350, -360), (350, 350)),
                 ((350, 350), (-110, 350)),
                 ((-110, 350), (-110, -190)),
