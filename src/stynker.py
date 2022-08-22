@@ -516,7 +516,24 @@ class Stynker(StynkerMind):
         Args:
             route: list of points where the Stynker has been
         """
-        pass
+        for i, input_point in self.input_points.items():
+            input_point = (
+                input_point[0] * self.radius,
+                input_point[1] * self.radius
+            )
+            input_route = list()
+            for point in route:
+                new_point = (
+                    point[0] + input_point[0],
+                    point[1] + input_point[1]
+                )
+                input_route.append(new_point)
+
+            for j, point in enumerate(input_route[:-1]):
+                segment = (point, route[i + 1])
+                for border_segment in self.environment.outer_segments:
+                    if self.environment.get_segment_intersection(*segment, *border_segment):
+                        self.activate_node(i)
 
     def clone_from(self, stk, **kwargs) -> None:
         """
