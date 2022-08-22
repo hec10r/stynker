@@ -89,7 +89,7 @@ class StynkerMind:
         # Make graph
         for i in range(self.n_nodes):
             # Mark first `n_input` nodes as input
-            if i in range(n_input):
+            if i in range(self.n_input):
                 node_type = "input"
                 # The input points are defined as two rings.
                 # One defined by the radius and the other by twice
@@ -419,9 +419,8 @@ class Stynker(StynkerMind):
         # Updates the position of the Stynker
         self.update_position(*interaction_info["new_position"])
 
-        # Activate input node
-        if (closest_input_node := interaction_info["closest_input_node"]) is not None:
-            self.activate_node(closest_input_node)
+        # Handle input nodes logic
+        self.run_input_points_logic(interaction_info["route"])
 
         # Apply friction
         self.apply_friction()
@@ -510,6 +509,15 @@ class Stynker(StynkerMind):
             y * self.friction_coefficient
         )
 
+    def run_input_points_logic(self, route: list[tuple[float], ...]) -> None:
+        """
+        Given the route where the center of the Stynker has been,
+        activates the input nodes based on a predefined logic
+        Args:
+            route: list of points where the Stynker has been
+        """
+        pass
+
     def clone_from(self, stk, **kwargs) -> None:
         """
         Redesign the current Stynker based on other
@@ -566,11 +574,15 @@ class Stynker(StynkerMind):
         touch_border = False
         won = False
         lost = False
-        closest_input_node = None
 
         first_intersection_info = self.environment.get_first_intersection_info(last_position, new_position)
 
+        # Points where the Stynker has been
+        route = [last_position, new_position]
+
         while (intersection_point := first_intersection_info["intersection_point"]) is not None:
+            # Pop the latest position of the route since it is outside the env.
+            route.pop()
             touch_border = True
             segment = first_intersection_info["segment"]
             a, b, c = first_intersection_info["segment_parameters"]
@@ -584,13 +596,13 @@ class Stynker(StynkerMind):
             last_position = intersection_point
             new_position = self.environment.reflect_point_over_line(*new_position, a, b, c)
             new_velocity_vector = self.environment.calculate_velocity_vector(new_velocity_vector, a, b)
+            # Save information about the points where Stynker has been
+            route.append(last_position)
+            route.append(new_position)
             first_intersection_info = self.environment.get_first_intersection_info(
                 last_position,
                 new_position,
             )
-
-        # TODO: Implement input logic
-
         result = {
             "previous_position": initial_position,
             "new_position": new_position,
@@ -599,7 +611,7 @@ class Stynker(StynkerMind):
             "touch_border": touch_border,
             "won": won,
             "lost": lost,
-            "closest_input_node": closest_input_node,
+            "route": route,
         }
         return result
 
