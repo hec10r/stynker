@@ -532,6 +532,7 @@ class Stynker(StynkerMind):
             for j, point in enumerate(input_route[:-1]):
                 segment = (point, route[i + 1])
                 for border_segment in self.environment.outer_segments:
+                    # Check if the points intersect
                     if self.environment.get_segment_intersection(*segment, *border_segment):
                         self.activate_node(i)
 
