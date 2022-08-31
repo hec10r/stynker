@@ -12,6 +12,8 @@ class Environment:
         winning_segment: tuple[tuple[float, float], tuple[float, float]],
         losing_segment: tuple[tuple[float, float], tuple[float, float]],
         inner_segments: tuple[tuple[float, float], ...],
+        winning_inner_segment: tuple[tuple[float, float], tuple[float, float]],
+        losing_inner_segment: tuple[tuple[float, float], tuple[float, float]],
         name: str = None,
     ):
         """
@@ -35,8 +37,14 @@ class Environment:
             border_coordinates: list of points where the borders
                 are specified
             winning_segment: tuple with the two pair of points
-                that define the winning segment
+                used to define the color of the segment (green)
             losing_segment: tuple with the two pair of points
+                used to define the color of the segment (red)
+            inner_segments: inner borders used to make the Stynker
+                bounces. Assumes that its radius is 10
+            winning_inner_segment: tuple with the two pair of points
+                that define the winning segment
+            losing_inner_segment: tuple with the two pair of points
                 that define the losing segment
             name: name of the environment
         """
@@ -53,6 +61,8 @@ class Environment:
         self.losing_segment = losing_segment
         self.name = name
         self.inner_segments = inner_segments
+        self.winning_inner_segment = winning_inner_segment
+        self.losing_inner_segment = losing_inner_segment
         self.outer_segments = self.get_segments()
 
     def draw_borders(self) -> turtle.Turtle:
@@ -66,12 +76,12 @@ class Environment:
             segment = (previous_coord, coord)
             if (
                 previous_coord is not None
-                and self.segment_contained(segment, self.winning_segment)
+                and segment == self.winning_segment
             ):
                 border.pencolor("#2dc937")
             elif (
                 previous_coord is not None
-                and self.segment_contained(segment, self.losing_segment)
+                and segment == self.losing_segment
             ):
                 border.pencolor("#cc3232")
             else:
@@ -86,7 +96,7 @@ class Environment:
     def get_segments(self) -> list[tuple[tuple[float, float], tuple[float, float]]]:
         """
         From the corners of the border, create the list
-        of segments used to draw the environment
+        of different segments used to draw the environment
         """
         segments = list()
         num_points = len(self.border_coordinates)
