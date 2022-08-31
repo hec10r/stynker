@@ -60,40 +60,6 @@ def get_environment_inputs(env_name: str) -> Dict[str, Any]:
     Returns:
         Information about the environment
     """
-    if env_name == "hexagon":
-        hexagonal_radius = 360
-        hexagonal_environment = {
-            "border_coordinates": [
-                (
-                    math.cos(math.radians(alpha)) * hexagonal_radius,
-                    math.sin(math.radians(alpha)) * hexagonal_radius
-                )
-                for alpha in range(0, 420, 60)
-            ],
-            "winning_segment": (
-                (
-                    math.cos(math.radians(60)) * hexagonal_radius,
-                    math.sin(math.radians(60)) * hexagonal_radius
-                ),
-                (
-                    math.cos(math.radians(120)) * hexagonal_radius,
-                    math.sin(math.radians(120)) * hexagonal_radius
-                ),
-            ),
-            "losing_segment": (
-                (
-                    math.cos(math.radians(240)) * hexagonal_radius,
-                    math.sin(math.radians(240)) * hexagonal_radius
-                ),
-                (
-                    math.cos(math.radians(300)) * hexagonal_radius,
-                    math.sin(math.radians(300)) * hexagonal_radius
-                ),
-            ),
-            "name": env_name,
-        }
-        return hexagonal_environment
-
     if env_name == "simple_maze":
         simple_maze = {
             "border_coordinates": [
@@ -123,8 +89,14 @@ def get_environment_inputs(env_name: str) -> Dict[str, Any]:
                 ((130, 190), (130, -360)),
                 ((130, -360), (350, -360)),
             ],
-            "winning_segment": ((-130, 360), (-350, 360)),
-            "losing_segment": ((130, -360), (350, -360)),
+            # These are used to color the environment borders
+            "winning_segment": ((-120, 360), (-360, 360)),
+            "losing_segment": ((120, -360), (360, -360)),
+
+            # These are used to know when the Stynker win/loss.
+            # This logic assumes that the Stynker radius is 10
+            "winning_inner_segment": ((-130, 360), (-350, 360)),
+            "losing_inner_segment": ((130, -360), (350, -360)),
             "name": env_name,
         }
         return simple_maze
