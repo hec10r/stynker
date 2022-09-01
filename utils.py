@@ -83,14 +83,14 @@ def get_environment_inputs(env_name: str) -> Dict[str, Any]:
                 ((350, 350), (-110, 350)),
                 ((-110, 350), (-110, -190)),
                 ((-110, -190), (-130, -190)),
-                ((-130, -190), (-130, 360)),
-                ((-130, 360), (-350, 360)),
-                ((-350, 360), (-350, -350)),
+                ((-130, -190), (-130, 350)),
+                ((-130, 350), (-350, 350)),
+                ((-350, 350), (-350, -350)),
                 ((-350, -350), (110, -350)),
                 ((110, -350), (110, 190)),
                 ((110, 190), (130, 190)),
-                ((130, 190), (130, -360)),
-                ((130, -360), (350, -360)),
+                ((130, 190), (130, -350)),
+                ((130, -350), (350, -350)),
             ],
             # These are used to color the environment borders
             "winning_segment": ((-120, 360), (-360, 360)),
@@ -98,8 +98,8 @@ def get_environment_inputs(env_name: str) -> Dict[str, Any]:
 
             # These are used to know when the Stynker win/loss.
             # This logic assumes that the Stynker radius is 10
-            "winning_inner_segment": ((-130, 360), (-350, 360)),
-            "losing_inner_segment": ((130, -360), (350, -360)),
+            "winning_inner_segment": ((-130, 350), (-350, 350)),
+            "losing_inner_segment": ((130, -350), (350, -350)),
             "name": env_name,
         }
         return simple_maze
