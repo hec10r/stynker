@@ -46,6 +46,14 @@ class Edge:
         self.next_steps.append(self.length)
 
     def to_keys(self) -> tuple[Any, ...]:
+        """
+        Save the current Edge information, so it can be
+        re-created
+
+        Returns:
+            Tuple with information on how to re-create
+            the current Edge
+        """
         parameters = (
             ("node", self.node.to_keys()),
             ("weight", self.weight),
@@ -56,6 +64,15 @@ class Edge:
 
     @classmethod
     def from_keys(cls, parameters: tuple[Any, ...]) -> Edge:
+        """
+        Recreate an Edge from given parameters
+        Args:
+            parameters: information on how to initialize a new
+                instance of the current class
+
+        Returns:
+            New instance with the information given in `parameters`
+        """
         input_parameters = dict()
         for key, val in parameters:
             if key == "node":
