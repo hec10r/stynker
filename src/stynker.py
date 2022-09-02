@@ -381,19 +381,19 @@ class Stynker(StynkerMind):
                 f"class or a string"
             )
 
-    def run_cycle(self, **kwargs) -> Any:
+    def run_cycle(self) -> Any:
         """
         Depending on the `period` run the required logic
         """
         self.current_cycle += 1
         if self.period == "dream":
-            return self._run_dream_cycle(**kwargs)
+            return self._run_dream_cycle()
         elif self.period == "sleep":
-            return self._run_sleep_cycle(**kwargs)
+            return self._run_sleep_cycle()
         elif self.period == "wake":
-            return self._run_wake_cycle(**kwargs)
+            return self._run_wake_cycle()
 
-    def _run_wake_cycle(self, **kwargs) -> Dict[str, Any]:
+    def _run_wake_cycle(self) -> Dict[str, Any]:
         """Run the wake cycle"""
         x_vector, y_vector = self.velocity_vector
         # Load nodes
@@ -433,7 +433,7 @@ class Stynker(StynkerMind):
 
         return interaction_info
 
-    def _run_dream_cycle(self, **kwargs) -> None:
+    def _run_dream_cycle(self) -> None:
         """Run the dream cycle"""
         # Load nodes
         self.load_nodes()
@@ -448,7 +448,7 @@ class Stynker(StynkerMind):
                     # Load edges with trickles
                     edge.load()
 
-    def _run_sleep_cycle(self, **kwargs) -> None:
+    def _run_sleep_cycle(self) -> None:
         """Run the sleep cycle"""
         if self.random_sleep:
             nodes_to_remake = sample(list(self.get_nodes()), self.n_remakes)
