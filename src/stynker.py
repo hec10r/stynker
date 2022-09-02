@@ -35,8 +35,12 @@ class StynkerMind:
                 If -1, an empty graph is created
             n_input: number of node of type input
             n_output: number of node of type output
+            period: name of the current period
+            current_cycle: counter of the number of cycles
             random_sleep: if True, remake random nodes while in sleep cycle.
                 If False, remake those with less damage
+            graph: it is possible to initialize the Stynker from
+                an existing graph of nodes
         """
         # Dictionary to get easy access to the nodes by their names
         self.nodes_dict = dict()
@@ -320,14 +324,14 @@ class Stynker(StynkerMind):
         Graph that represent an intelligent life
 
         Args:
+            environment: Instance of Environment or string with
+                its name. Describes the maze where the Stynker moves
+            color: color to use to represent the Stynker
             n_nodes: number of nodes to initialize the graph with.
                 If -1, an empty graph is created
-            n_remakes: number of nodes to remake in the sleep cycle
             n_input: number of node of type input
             n_output: number of node of type output
-            color: color to use to represent the Stynker
-            environment: instance of Environment, who describes where the
-                maze where the Stynker moves
+            n_remakes: number of nodes to remake in the sleep cycle
             friction_coefficient: ratio to define how much velocity
                 does the Stynker lose in each cycle
             radius: radius of the representation of the Stynker
@@ -335,6 +339,8 @@ class Stynker(StynkerMind):
             show_route: whether to show the path that the Stynker follows
             random_sleep: if True, remake random nodes while in sleep cycle.
                 If False, remake those with less damage
+            graph: it is possible to initialize the Stynker from
+                an existing graph of nodes
         """
         super().__init__(
             n_nodes=n_nodes,
