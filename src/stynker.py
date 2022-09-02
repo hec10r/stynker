@@ -509,7 +509,7 @@ class Stynker(StynkerMind):
             y * self.friction_coefficient
         )
 
-    def run_input_points_logic(self, route: list[tuple[float], ...]) -> None:
+    def run_input_points_logic(self, route: list[tuple[float, float], ...]) -> None:
         """
         Given the route where the center of the Stynker has been,
         activates the input nodes based on a predefined logic
@@ -517,23 +517,21 @@ class Stynker(StynkerMind):
             route: list of points where the Stynker has been
         """
         for i, input_point in self.input_points.items():
-            input_point = (
-                input_point[0] * self.radius,
-                input_point[1] * self.radius
-            )
+            # For a given input point, get the list of its
+            # positions given the center of the Stynker
             input_route = list()
             for point in route:
                 new_point = (
-                    point[0] + input_point[0],
-                    point[1] + input_point[1]
+                    point[0] + input_point[0] * self.radius,
+                    point[1] + input_point[1] * self.radius
                 )
                 input_route.append(new_point)
 
             for j, point in enumerate(input_route[:-1]):
-                segment = (point, route[i + 1])
+                segment = (point, route[j + 1])
                 for border_segment in self.environment.outer_segments:
                     # Check if the points intersect
-                    if self.environment.get_segment_intersection(*segment, *border_segment):
+                    if self.environment.intersect(*segment, *border_segment):
                         self.activate_node(i)
 
     def clone_from(self, stk, **kwargs) -> None:
@@ -604,18 +602,19 @@ class Stynker(StynkerMind):
             touch_border = True
             segment = first_intersection_info["segment"]
             a, b, c = first_intersection_info["segment_parameters"]
-            if segment == self.environment.winning_segment:
+            if segment == self.environment.winning_inner_segment:
                 won = True
-                break
-            if segment == self.environment.losing_segment:
+            if segment == self.environment.losing_inner_segment:
                 lost = True
-                break
-
             last_position = intersection_point
+            # Save information about the points where Stynker has been
+            route.append(last_position)
+            # Breaking here since no further calculation is required
+            if won or lost:
+                break
             new_position = self.environment.reflect_point_over_line(*new_position, a, b, c)
             new_velocity_vector = self.environment.calculate_velocity_vector(new_velocity_vector, a, b)
             # Save information about the points where Stynker has been
-            route.append(last_position)
             route.append(new_position)
             first_intersection_info = self.environment.get_first_intersection_info(
                 last_position,
