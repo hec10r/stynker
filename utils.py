@@ -46,7 +46,7 @@ def parse_args() -> Namespace:
     parser.add_argument(
         "-rs", "--random_sleep", type=bool,
         required=False,
-        help="Whether to show the route"
+        help="Whether to use random sleep"
     )
 
     return parser.parse_args()
