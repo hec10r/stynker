@@ -98,9 +98,9 @@ if __name__ == "__main__":
                     except ZeroDivisionError:
                         ratio = -1
                     results[num_run_cycles] = (cnt_win, cnt_lose, ratio)
-                    # Restart counter after `results_cycles`
-                    cnt_win = 0
-                    cnt_lose = 0
+                    # Restart counter after `results_cycles, cumulative is no reset`
+#                    cnt_win = 0
+#                    cnt_lose = 0
                     print(results)
         else:
             for _ in range(n_cycles):
