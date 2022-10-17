@@ -3,6 +3,7 @@ import time
 from src import Stynker
 from parameters import cycles, stynker_parameters
 from utils import parse_args
+from datetime import datetime
 
 # Win / Lose logic
 cnt_win = 0
@@ -102,6 +103,8 @@ if __name__ == "__main__":
 #                    cnt_win = 0
 #                    cnt_lose = 0
                     print(results)
+                    # added a timestamp
+                    print("Time: ", datetime.now() )
         else:
             for _ in range(n_cycles):
                 stynker_1.run_cycle()
