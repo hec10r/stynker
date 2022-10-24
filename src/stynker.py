@@ -1,5 +1,6 @@
 from __future__ import annotations
 import json
+import logging
 import math
 import pickle
 import turtle
@@ -399,12 +400,16 @@ class Stynker(StynkerMind):
         # Load nodes
         self.load_nodes()
 
+        nodes_triggered = 0
+
         # Check nodes
         for node in self.get_nodes():
             # Check if the node is full
             if node.is_full():
                 # Mark output node as active if it spills
                 if node.is_output:
+                    nodes_triggered += 1
+                    logging.debug(f"Kicking node {node.name}")
                     kick_vector = self.kick_dictionary[node.name]
                     x_vector += kick_vector[0]
                     y_vector += kick_vector[1]
@@ -430,6 +435,11 @@ class Stynker(StynkerMind):
 
         # Apply friction
         self.apply_friction()
+
+        logging.debug(
+            f"During the cycle {self.current_cycle},"
+            f"{nodes_triggered} nodes were triggered"
+        )
 
         return interaction_info
 

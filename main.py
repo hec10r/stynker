@@ -1,4 +1,5 @@
 import json
+import logging
 import time
 from src import Stynker
 from parameters import cycles, stynker_parameters
@@ -19,6 +20,9 @@ results = dict()
 
 
 if __name__ == "__main__":
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)s {%(module)s} [%(funcName)s] %(message)s',
+                        datefmt='%Y-%m-%d,%H:%M:%S', level=logging.DEBUG)
     # Read parameters from command line
     args = parse_args()
 
@@ -37,7 +41,7 @@ if __name__ == "__main__":
         for key, val in stynker_parameters.items()
         if val is not None
     }
-    print(f"Running program with the following parameters: {stynker_parameters}")
+    logging.info(f"Running program with the following parameters: {stynker_parameters}")
 
     # Initialize Stynkers
     stynker_1 = Stynker(
@@ -100,9 +104,9 @@ if __name__ == "__main__":
                         ratio = -1
                     results[num_run_cycles] = (cnt_win, cnt_lose, ratio)
 
-                    print(num_run_cycles, "Wins: ", cnt_win, "Losses:", cnt_lose, "Ratio:", ratio)
+                    logging.info(num_run_cycles, "Wins: ", cnt_win, "Losses:", cnt_lose, "Ratio:", ratio)
                     # Print current time
-                    print("Time:", datetime.now())
+                    logging.info("Time:", datetime.now())
 
         else:
             for _ in range(n_cycles):
@@ -110,7 +114,7 @@ if __name__ == "__main__":
                 stynker_2.run_cycle()
 
     # Final timestamp
-    print("Time: ", datetime.now())
+    logging.info("Time: ", datetime.now())
 
     # Saving the results with the current timestamp
     with open(f"results_{int(time.time())}.json", "w") as f:
