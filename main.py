@@ -100,8 +100,8 @@ if __name__ == "__main__":
                         ratio = -1
                     results[num_run_cycles] = (cnt_win, cnt_lose, ratio)
 
-                    print(num_run_cycles, "Wins:",cnt_win, "Losses:", cnt_lose, "Ratio:", ratio)
-                    # added a timestamp
+                    print(num_run_cycles, "Wins: ", cnt_win, "Losses:", cnt_lose, "Ratio:", ratio)
+                    # Print current time
                     print("Time:", datetime.now())
 
         else:
@@ -109,12 +109,7 @@ if __name__ == "__main__":
                 stynker_1.run_cycle()
                 stynker_2.run_cycle()
 
-#       I commented this out bc I dont think
-#       we need to print all the results again
-
-#   print(results)
-
-    # Adding a final timestamp
+    # Final timestamp
     print("Time: ", datetime.now())
 
     # Saving the results with the current timestamp
@@ -123,4 +118,3 @@ if __name__ == "__main__":
 
     # Saving Stynkers state
     stynker_1.to_pkl("latest_stynker_1.pkl")
- #   stynker_2.to_pkl("latest_stynker_2.pkl")
