@@ -3,13 +3,14 @@ import time
 from src import Stynker
 from parameters import cycles, stynker_parameters
 from utils import parse_args
+from datetime import datetime
 
 # Win / Lose logic
 cnt_win = 0
 cnt_lose = 0
 
 # Rendering and results logic
-rendering_rate = 100
+rendering_rate = 1000000000
 results_cycles = 10000
 
 # Variables for the results
@@ -98,14 +99,18 @@ if __name__ == "__main__":
                     except ZeroDivisionError:
                         ratio = -1
                     results[num_run_cycles] = (cnt_win, cnt_lose, ratio)
-                    # Restart counter after `results_cycles`
-                    cnt_win = 0
-                    cnt_lose = 0
-                    print(results)
+
+                    print(num_run_cycles, "Wins: ", cnt_win, "Losses:", cnt_lose, "Ratio:", ratio)
+                    # Print current time
+                    print("Time:", datetime.now())
+
         else:
             for _ in range(n_cycles):
                 stynker_1.run_cycle()
                 stynker_2.run_cycle()
+
+    # Final timestamp
+    print("Time: ", datetime.now())
 
     # Saving the results with the current timestamp
     with open(f"results_{int(time.time())}.json", "w") as f:
@@ -113,4 +118,3 @@ if __name__ == "__main__":
 
     # Saving Stynkers state
     stynker_1.to_pkl("latest_stynker_1.pkl")
-    stynker_2.to_pkl("latest_stynker_2.pkl")

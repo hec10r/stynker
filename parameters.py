@@ -1,18 +1,18 @@
 # Information about number of cycles
 cycles = [
-    ("dream", 1000),
+    ("wake", 10000),
     ("sleep", 1),
-    ("wake", 1000),
-    ("sleep", 1),
-] * 500
+#    ("dream", 5000),
+#    ("sleep", 1)
+] * 1000
 
 # Information about Stynker's parameters.
 # Assuming both will use the same
 mind_parameters = {
-    "n_nodes": 1000,
-    "n_remakes": 50,
-    "n_input": 8,
-    "n_output": 64,
+    "n_nodes": 800,
+    "n_remakes": 300,
+    "n_input": 128,
+    "n_output": 32,
     "random_sleep": False,
 }
 
@@ -20,7 +20,8 @@ mind_parameters = {
 environment_parameters = {
     "environment": "simple_maze",
     "initial_position": (0, 0),
-    "show_route": True,
+    "show_route": False,
+    "friction_coefficient": 1.0
 }
 
 stynker_parameters = {
