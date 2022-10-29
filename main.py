@@ -12,7 +12,7 @@ cnt_lose = 0
 
 # Rendering and results logic
 rendering_rate = 1000000000
-results_cycles = 200
+results_cycles = 1000
 
 # Variables for the results
 num_run_cycles = 0
@@ -22,7 +22,7 @@ results = dict()
 if __name__ == "__main__":
     logging.getLogger().setLevel(logging.DEBUG)
     logging.basicConfig(format='%(asctime)s.%(msecs)03d %(levelname)s {%(module)s} [%(funcName)s] %(message)s',
-                        datefmt='%Y-%m-%d,%H:%M:%S', level=logging.DEBUG)
+                        datefmt='%Y-%m-%d,%H:%M:%S', level=logging.INFO)
     # Read parameters from command line
     args = parse_args()
 

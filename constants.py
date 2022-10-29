@@ -1,7 +1,7 @@
 edge_constants = {
-    "n_edges_range": (1, 12),
-    "weight_range": (1, 20),
-    "length_range": (1, 4),
+    "n_edges_range": (1, 40),
+    "weight_range": (-15, 20),
+    "length_range": (1, 14),
 }
 node_constants = {
     "size_range": (300, 600),
