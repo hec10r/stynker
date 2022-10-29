@@ -12,7 +12,7 @@ cnt_lose = 0
 
 # Rendering and results logic
 rendering_rate = 1000000000
-results_cycles = 10000
+results_cycles = 200
 
 # Variables for the results
 num_run_cycles = 0
@@ -103,10 +103,9 @@ if __name__ == "__main__":
                     except ZeroDivisionError:
                         ratio = -1
                     results[num_run_cycles] = (cnt_win, cnt_lose, ratio)
-
                     logging.info(f"{num_run_cycles} Wins: {cnt_win} Losses: {cnt_lose} Ratio: {ratio}")
                     # Print current time
-                    logging.info("Time:", datetime.now())
+                    print("Time:", datetime.now())
 
         else:
             for _ in range(n_cycles):
@@ -114,7 +113,7 @@ if __name__ == "__main__":
                 stynker_2.run_cycle()
 
     # Final timestamp
-    logging.info("Time: ", datetime.now())
+    print("Time: ", datetime.now())
 
     # Saving the results with the current timestamp
     with open(f"results_{int(time.time())}.json", "w") as f:
