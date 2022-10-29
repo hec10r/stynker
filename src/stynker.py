@@ -179,7 +179,7 @@ class StynkerMind:
                 edge.run_cycle()
             # Load based on input value
             if node.is_input and node.is_active:
-                node.increase_level(10)
+                node.increase_level(node.size)
                 node.deactivate()
 
     def activate_node(self, n: int) -> None:
@@ -454,15 +454,23 @@ class Stynker(StynkerMind):
         # Load nodes
         self.load_nodes()
 
+        nodes_triggered = 0
+
         # Check nodes
         for node in self.get_nodes():
             # Check if the node is full
             if node.is_full():
                 # Spill full nodes
                 node.spill()
+                nodes_triggered += 1
                 for edge in self.graph[node]:
                     # Load edges with trickles
                     edge.load()
+
+        logging.debug(
+            f"Cycle {self.current_cycle},"
+            f"{nodes_triggered} nodes triggered"
+        )
 
     def _run_sleep_cycle(self) -> None:
         """Run the sleep cycle"""
