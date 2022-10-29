@@ -105,7 +105,7 @@ if __name__ == "__main__":
                     results[num_run_cycles] = (cnt_win, cnt_lose, ratio)
                     logging.info(f"{num_run_cycles} Wins: {cnt_win} Losses: {cnt_lose} Ratio: {ratio}")
                     # Print current time
-                    print("Time:", datetime.now())
+#                    print("Time:", datetime.now())
 
         else:
             for _ in range(n_cycles):
@@ -113,7 +113,7 @@ if __name__ == "__main__":
                 stynker_2.run_cycle()
 
     # Final timestamp
-    print("Time: ", datetime.now())
+#    print("Time: ", datetime.now())
 
     # Saving the results with the current timestamp
     with open(f"results_{int(time.time())}.json", "w") as f:
