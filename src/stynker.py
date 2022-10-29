@@ -414,13 +414,13 @@ class Stynker(StynkerMind):
             if node.is_full():
                 # Mark output node as active if it spills
                 if node.is_output:
-                    nodes_triggered += 1
                     logging.debug(f"Kicking node {node.name}")
                     kick_vector = self.kick_dictionary[node.name]
                     x_vector += kick_vector[0]
                     y_vector += kick_vector[1]
                 # Spill full nodes
                 node.spill()
+                nodes_triggered += 1
                 for edge in self.graph[node]:
                     # Load edges with trickles
                     edge.load()
@@ -443,8 +443,8 @@ class Stynker(StynkerMind):
         self.apply_friction()
 
         logging.debug(
-            f"During the cycle {self.current_cycle},"
-            f"{nodes_triggered} nodes were triggered"
+            f"Cycle {self.current_cycle},"
+            f"{nodes_triggered} nodes triggered"
         )
 
         return interaction_info
