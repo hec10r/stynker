@@ -85,10 +85,16 @@ class StynkerMind:
                 "than the sum of the input and output nodes"
             )
 
-        if self.n_input % 2:
+        if self.n_input % 8:
             raise ValueError(
-                "The number of input nodes must be even, since currently"
-                "they are defined as two rings"
+                "The number of input nodes must be div by 8, to remove bias. "
+                "They are defined as two rings, and must point all directions"
+            )
+
+        if self.n_output % 8:
+            raise ValueError(
+                "The number of output nodes must be div by 8, to remove bias. "
+                "They are defined as two rings, and must point all directions"
             )
 
         # Make graph
