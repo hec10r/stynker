@@ -104,7 +104,7 @@ if __name__ == "__main__":
                         ratio = -1
                     results[num_run_cycles] = (cnt_win, cnt_lose, ratio)
 
-                    logging.info(num_run_cycles, "Wins: ", cnt_win, "Losses:", cnt_lose, "Ratio:", ratio)
+                    logging.info(f"{num_run_cycles} Wins: {cnt_win} Losses: {cnt_lose} Ratio: {ratio}")
                     # Print current time
                     logging.info("Time:", datetime.now())
 
