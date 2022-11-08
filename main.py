@@ -11,8 +11,8 @@ cnt_win = 0
 cnt_lose = 0
 
 # Rendering and results logic
-rendering_rate = 1000000000
-results_cycles = 1000
+rendering_rate = 100000000000
+results_cycles = 5000
 
 # Variables for the results
 num_run_cycles = 0
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     stynker_2 = Stynker(
         color="purple",
         **stynker_parameters,
-    )
+   )
 
     environment = stynker_1.environment
 

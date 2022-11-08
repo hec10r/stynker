@@ -1,20 +1,20 @@
 # Information about number of cycles
-cycles = [
-    ("wake", 1000),
-    ("sleep", 1),
-    ("dream", 1000),
-    ("sleep", 1),
-    ("dream", 1000),
+cycles = ([
+    ("wake", 100),
     ("sleep", 1)
-] * 1000
+] * 40 +
+[  ("dream", 100),
+   ("sleep", 1)
+] * 40
+          ) * 10000
 
 # Information about Stynker's parameters.
 # Assuming both will use the same
 mind_parameters = {
-    "n_nodes": 800,
-    "n_remakes": 10,
-    "n_input": 256,
-    "n_output": 32,
+    "n_nodes": 48,
+    "n_remakes": 4,
+    "n_input": 32,
+    "n_output": 16,
     "random_sleep": False,
 }
 
