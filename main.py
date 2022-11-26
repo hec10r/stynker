@@ -11,7 +11,8 @@ cnt_win = 0
 cnt_lose = 0
 
 # Rendering and results logic
-rendering_rate = 100000000000
+rendering_rate = 1
+num_wake_cycles = 0
 results_cycles = 5000
 
 # Variables for the results
@@ -61,7 +62,8 @@ if __name__ == "__main__":
         stynker_2.assign_period(period)
 
         if period == "wake":
-            for n in range(n_cycles):
+            num_wake_cycles += 1
+            for _ in range(n_cycles):
                 num_run_cycles += 1
                 info_1 = stynker_1.run_cycle()
                 info_2 = stynker_2.run_cycle()
@@ -94,7 +96,7 @@ if __name__ == "__main__":
                     stynker_1.reset_vector()
                     stynker_2.reset_vector()
 
-                if (n + 1) % rendering_rate == 0:
+                if (num_wake_cycles + 1) % rendering_rate == 0:
                     environment.window.update()
 
                 if num_run_cycles % results_cycles == 0:
