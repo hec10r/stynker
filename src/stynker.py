@@ -133,6 +133,7 @@ class StynkerMind:
                     name=i,
                     size=randint(*node_constants["size_range"]),
                     endo=randint(*node_constants["endo_range"]),
+                    duration=randint(*node_constants["endo_range"]),
                     node_type=node_type,
                 )
                 self.graph[node] = set()
@@ -474,6 +475,12 @@ class Stynker(StynkerMind):
 
     def _run_sleep_cycle(self) -> None:
         """Run the sleep cycle"""
+        expired_nodes = list()
+        for node in self.get_nodes():
+            node.sleep()
+            if node.has_expired():
+                expired_nodes.append(node)
+
         if self.random_sleep:
             nodes_to_remake = sample(list(self.get_nodes()), self.n_remakes)
         else:
@@ -486,6 +493,7 @@ class Stynker(StynkerMind):
             # Pick first n nodes with less damage
             nodes_to_remake = ordered_nodes[:self.n_remakes]
 
+        nodes_to_remake += expired_nodes
         # Remake selected nodes
         self.remake(nodes_to_remake)
 

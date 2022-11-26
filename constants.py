@@ -6,4 +6,5 @@ edge_constants = {
 node_constants = {
     "size_range": (400, 500),
     "endo_range": (1, 4),
+    "duration_range": (100, 200),
 }

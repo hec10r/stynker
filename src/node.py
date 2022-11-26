@@ -13,10 +13,12 @@ class Node:
         name: int,
         size: int,
         endo: int,
+        duration: int,
         node_type: str = "regular",
         level: int = 0,
         damage: int = 0,
         is_active: bool = False,
+        num_sleep_cycles: int = 0,
     ) -> None:
         """
 
@@ -24,15 +26,20 @@ class Node:
             name: integer to identify a node
             size: capacity of the node
             endo: how much juice is added to the node after a cycle
+            duration: number of sleeps cycles before being remade
             node_type: type of the node: input | output | regular
+            num_sleep_cycles: number of sleep cycles the node has been
+                since it was created (when remade, it restarts)
         """
         self.name = name
         self.size = size
         self.endo = endo
+        self.duration = duration
         self.type = node_type
         self.level = level
         self.damage = damage
         self.is_active = is_active
+        self.num_sleep_cycles = num_sleep_cycles
         self.is_input = node_type == "input"
         self.is_output = node_type == "output"
 
@@ -61,7 +68,13 @@ class Node:
     def run_cycle(self) -> None:
         """Increase the `level` by `endo`"""
         self.increase_level(self.endo)
-    
+
+    def sleep(self) -> None:
+        self.num_sleep_cycles += 1
+
+    def has_expired(self) -> bool:
+        return self.num_sleep_cycles == self.duration
+
     def increase_level(self, q: int) -> None:
         """
         Increase the `level` by a given quantity.
@@ -76,6 +89,8 @@ class Node:
         """
         self.size = randint(*node_constants["size_range"])
         self.endo = randint(*node_constants["endo_range"])
+        self.duration = randint(*node_constants["duration_range"])
+        self.num_sleep_cycles = 0
 
     def activate(self) -> None:
         """Mark node as active if it is input or output"""
