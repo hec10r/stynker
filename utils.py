@@ -1,4 +1,4 @@
-import math
+import time
 from argparse import Namespace, ArgumentParser
 from typing import Dict, Any
 
@@ -60,6 +60,21 @@ def get_environment_inputs(env_name: str) -> Dict[str, Any]:
     Returns:
         Information about the environment
     """
+    segment_1_info = {
+        "segment": ((-120, 360), (-360, 360)),
+        "inner_segment": ((-130, 350), (-350, 350))
+    }
+
+    segment_2_info = {
+        "segment": ((120, -360), (360, -360)),
+        "inner_segment": ((130, -350), (350, -350))
+    }
+
+    segments_info = [segment_1_info, segment_2_info]
+    # Randomize losing/winning segments
+    winning_info = segments_info.pop(int(time.time()) % 2)
+    losing_info = segments_info.pop()
+
     if env_name == "simple_maze":
         simple_maze = {
             "border_coordinates": [
@@ -93,13 +108,13 @@ def get_environment_inputs(env_name: str) -> Dict[str, Any]:
                 ((130, -350), (350, -350)),
             ],
             # These are used to color the environment borders
-            "winning_segment": ((-120, 360), (-360, 360)),
-            "losing_segment": ((120, -360), (360, -360)),
+            "winning_segment": winning_info["segment"],
+            "losing_segment": losing_info["segment"],
 
             # These are used to know when the Stynker win/loss.
             # This logic assumes that the Stynker radius is 10
-            "winning_inner_segment": ((-130, 350), (-350, 350)),
-            "losing_inner_segment": ((130, -350), (350, -350)),
+            "winning_inner_segment": winning_info["inner_segment"],
+            "losing_inner_segment": losing_info["inner_segment"],
             "name": env_name,
         }
         return simple_maze
